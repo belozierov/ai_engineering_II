@@ -1,0 +1,2 @@
+# time: 12.0s | cost: $0.018760
+**Git-Burn**: Stop pretending you'll clean up stale branches—Git-Burn does it for you, automatically cremating anything untouched for 30 days and notifying the last committer on Slack so they know their code got torched. It's the "set it and forget it" DevOps solution for engineers who'd rather spend time shipping features than managing branch graveyards. Your repository hygiene just became someone else's automated problem.

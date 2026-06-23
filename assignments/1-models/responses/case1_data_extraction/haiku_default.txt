@@ -1,0 +1,105 @@
+# time: 13.8s | cost: $0.051912
+```json
+[
+  {
+    "timestamp": "2026-02-27 14:10:05.123",
+    "status_code": 200,
+    "request_time_ms": 45,
+    "error_type": null,
+    "client_ip": "192.168.1.15"
+  },
+  {
+    "timestamp": 1740665406,
+    "status_code": 401,
+    "request_time_ms": 12,
+    "error_type": "invalid_token",
+    "client_ip": "192.168.1.15"
+  },
+  {
+    "timestamp": 1740665408,
+    "status_code": 500,
+    "request_time_ms": 1500,
+    "error_type": "db_timeout",
+    "client_ip": "10.0.5.102"
+  },
+  {
+    "timestamp": "2026-02-27 14:10:12.445",
+    "status_code": 200,
+    "request_time_ms": 2,
+    "error_type": null,
+    "client_ip": "172.16.0.44"
+  },
+  {
+    "timestamp": "2026-02-27 14:10:15.901",
+    "status_code": 499,
+    "request_time_ms": 30000,
+    "error_type": "timeout",
+    "client_ip": "192.168.1.88"
+  },
+  {
+    "timestamp": "2026-02-27 14:10:16.001",
+    "status_code": 200,
+    "request_time_ms": 5,
+    "error_type": null,
+    "client_ip": "UNKNOWN_IP"
+  },
+  {
+    "timestamp": "2026-02-27 14:10:17.000",
+    "status_code": null,
+    "request_time_ms": 0,
+    "error_type": "CONNECTION_REFUSED",
+    "client_ip": "8.8.8.8"
+  },
+  {
+    "timestamp": "2026-02-27 14:10:18.111",
+    "status_code": 403,
+    "request_time_ms": 10,
+    "error_type": null,
+    "client_ip": "127.0.0.1"
+  },
+  {
+    "timestamp": 1740665420,
+    "status_code": 200,
+    "request_time_ms": 450,
+    "error_type": null,
+    "client_ip": "192.168.1.15"
+  },
+  {
+    "timestamp": "2026-02-27 14:10:22.000",
+    "status_code": 200,
+    "request_time_ms": 1,
+    "error_type": null,
+    "client_ip": "1.1.1.1"
+  },
+  {
+    "timestamp": null,
+    "status_code": 505,
+    "request_time_ms": 0,
+    "error_type": "internal_kernel_panic",
+    "client_ip": null
+  },
+  {
+    "timestamp": "2026-02-27 14:10:25.123",
+    "status_code": 200,
+    "request_time_ms": 38,
+    "error_type": null,
+    "client_ip": "192.168.1.15"
+  },
+  {
+    "timestamp": "2026-02-27 14:10:26.000",
+    "status_code": 401,
+    "request_time_ms": 5,
+    "error_type": "session_expired",
+    "client_ip": "10.0.0.1"
+  }
+]
+```
+
+I've extracted **13 valid log entries** from your logs. Here's a summary of the extraction:
+
+- **Lines skipped**: Gaps, comments, metadata lines, and internal traces were filtered out
+- **Timestamps**: Kept in original format (ISO 8601 or Unix epoch)
+- **Client IPs**: Included "UNKNOWN_IP" as-is; set to `null` only when explicitly missing (critical system failure)
+- **Request times**: Parsed numeric milliseconds values
+- **Status codes**: Numeric codes extracted; set to `null` when absent (e.g., CONNECT error)
+- **Error types**: Extracted from parenthetical error descriptions or capitalized error messages; `null` for successful requests
