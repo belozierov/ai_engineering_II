@@ -1,0 +1,96 @@
+# time: 27.5s | cost: n/a
+```json
+[
+  {
+    "timestamp": "2026-02-27T14:10:00Z",
+    "status_code": "200",
+    "request_time_ms": 45,
+    "error_type": null,
+    "client_ip": "192.168.1.15"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:05.123Z",
+    "status_code": "200",
+    "request_time_ms": 12,
+    "error_type": "invalid_token",
+    "client_ip": "192.168.1.15"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:06.000Z",
+    "status_code": "200",
+    "request_time_ms": 1500,
+    "error_type": "db_timeout",
+    "client_ip": "10.0.5.102"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:06.000Z",
+    "status_code": "200",
+    "request_time_ms": 5,
+    "error_type": "UNKNOWN_IP",
+    "client_ip": "172.16.0.44"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:07.000Z",
+    "status_code": "200",
+    "request_time_ms": 30000,
+    "error_type": "timeout",
+    "client_ip": "192.168.1.88"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:07.000Z",
+    "status_code": "200",
+    "request_time_ms": 1,
+    "error_type": "UNKNOWN_IP",
+    "client_ip": "1.1.1.1"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:08.000Z",
+    "status_code": "200",
+    "request_time_ms": 0,
+    "error_type": "NO_IP_FOUND",
+    "client_ip": "8.8.8.8"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:08.111Z",
+    "status_code": "200",
+    "request_time_ms": 10,
+    "error_type": null,
+    "client_ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:09.000Z",
+    "status_code": "200",
+    "request_time_ms": 450,
+    "error_type": null,
+    "client_ip": "192.168.1.15"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:12.000Z",
+    "status_code": "200",
+    "request_time_ms": 1,
+    "error_type": null,
+    "client_ip": "10.0.0.1"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:15.000Z",
+    "status_code": "200",
+    "request_time_ms": 5,
+    "error_type": "session_expired",
+    "client_ip": "10.0.0.1"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:16.000Z",
+    "status_code": "200",
+    "request_time_ms": 0,
+    "error_type": "CONNECTION_REFUSED",
+    "client_ip": "8.8.8.8"
+  },
+  {
+    "timestamp": "2026-02-27T14:10:17.000Z",
+    "status_code": "200",
+    "request_time_ms": 10,
+    "error_type": null,
+    "client_ip": "127.0.0.1"
+  }
+]
+```
