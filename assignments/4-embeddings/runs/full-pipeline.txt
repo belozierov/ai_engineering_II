@@ -1,0 +1,203 @@
+  Saved: clusters.png
+k=3  inertia=241.27141  ARI=0.318
+k=4  inertia=234.55078  ARI=0.388
+k=5  inertia=228.34546  ARI=0.505
+k=6  inertia=223.66895  ARI=0.540
+k=7  inertia=220.38292  ARI=0.502
+k=8  inertia=218.35524  ARI=0.508
+k=9  inertia=216.54138  ARI=0.482
+k=10  inertia=213.95493  ARI=0.428
+k=12  inertia=210.29564  ARI=0.437
+Best k=6 (ARI=0.540)
+Clusters:
+  0: Account Security and Access Issues — 46 tickets
+  1: Delivery Issues — 52 tickets
+  2: Device Performance Issues — 52 tickets
+  3: Refund Issues — 42 tickets
+  4: Order and Pricing — 70 tickets
+  5: Charge Issues — 38 tickets
+
+Query: "my laptop screen is broken" (expected: technical)
+
+BM25 (0.13 ms):
+  [ 86]   9.1188  technical       My laptop screen flickers constantly after the latest system
+  [112]   7.5256  technical       Touchpad on my laptop is intermittently unresponsive to taps
+  [ 90]   6.8783  technical       My smart thermostat is unresponsive and shows a blank screen
+  [179]   5.7729  returns         My warranty claim for a broken hinge was rejected without ex
+  [242]   5.2214  feature_request Please add screen reader accessibility — the app is hard to 
+  recall@5 [technical]: 3/5
+
+Cosine (0.04 ms):
+  [173]   0.6581  returns         The item I received has a cracked screen straight out of the
+  [172]   0.4776  returns         I want to return the laptop I bought — it doesn't match the 
+  [ 86]   0.4769  technical       My laptop screen flickers constantly after the latest system
+  [115]   0.4224  technical       Dead pixels appeared in the upper-right corner of the monito
+  [ 97]   0.4176  technical       My tablet touchscreen doesn't respond near the edges
+  recall@5 [technical]: 3/5
+
+RRF fusion (0.02 ms):
+  [ 86]   0.0323  technical       My laptop screen flickers constantly after the latest system
+  [173]   0.0164  returns         The item I received has a cracked screen straight out of the
+  [112]   0.0161  technical       Touchpad on my laptop is intermittently unresponsive to taps
+  [172]   0.0161  returns         I want to return the laptop I bought — it doesn't match the 
+  [ 90]   0.0159  technical       My smart thermostat is unresponsive and shows a blank screen
+  recall@5 [technical]: 3/5
+
+USearch (0.07 ms):
+  [173]   0.6581  returns         The item I received has a cracked screen straight out of the
+  [172]   0.4776  returns         I want to return the laptop I bought — it doesn't match the 
+  [ 86]   0.4769  technical       My laptop screen flickers constantly after the latest system
+  [115]   0.4224  technical       Dead pixels appeared in the upper-right corner of the monito
+  [ 97]   0.4176  technical       My tablet touchscreen doesn't respond near the edges
+  recall@5 [technical]: 3/5
+
+Query: "I can't authenticate my identity" (expected: account)
+
+BM25 (0.08 ms):
+  [ 19]   9.0436  account         Can't complete identity verification — my ID photo keeps fai
+  [ 37]   5.8887  account         My account is flagged as suspicious even after I verified my
+  [ 17]   5.4849  account         Forgot security question answers for identity verification
+  [ 10]   4.6007  account         I can't change my username, the field is greyed out
+  [ 78]   4.4224  billing         I can't find the billing history section in my account setti
+  recall@5 [account]: 4/5
+
+Cosine (0.02 ms):
+  [ 19]   0.7150  account         Can't complete identity verification — my ID photo keeps fai
+  [ 37]   0.6285  account         My account is flagged as suspicious even after I verified my
+  [  1]   0.5968  account         Can't log in even though I'm sure the password is correct
+  [ 16]   0.5483  account         I enabled two-step verification but now can't get back in
+  [ 17]   0.5217  account         Forgot security question answers for identity verification
+  recall@5 [account]: 5/5
+
+RRF fusion (0.00 ms):
+  [ 19]   0.0328  account         Can't complete identity verification — my ID photo keeps fai
+  [ 37]   0.0323  account         My account is flagged as suspicious even after I verified my
+  [ 17]   0.0313  account         Forgot security question answers for identity verification
+  [  1]   0.0159  account         Can't log in even though I'm sure the password is correct
+  [ 10]   0.0156  account         I can't change my username, the field is greyed out
+  recall@5 [account]: 5/5
+
+USearch (0.05 ms):
+  [ 19]   0.7150  account         Can't complete identity verification — my ID photo keeps fai
+  [ 37]   0.6285  account         My account is flagged as suspicious even after I verified my
+  [  1]   0.5968  account         Can't log in even though I'm sure the password is correct
+  [ 16]   0.5483  account         I enabled two-step verification but now can't get back in
+  [ 17]   0.5217  account         Forgot security question answers for identity verification
+  recall@5 [account]: 5/5
+
+Query: "money problems with my purchase" (expected: billing)
+
+BM25 (0.06 ms):
+  [ 77]   4.9539  billing         My company's purchase order number is missing from the invoi
+  [200]   4.5844  returns         My account doesn't show the purchase even though I have the 
+  [ 58]   4.4195  billing         The cashback reward was not applied to my account after the 
+  [217]   4.2661  feature_request Can you add the option to export my purchase history to a CS
+  [240]   3.8638  feature_request I'd like the option to hide my purchase history from other f
+  recall@5 [billing]: 2/5
+
+Cosine (0.02 ms):
+  [200]   0.5459  returns         My account doesn't show the purchase even though I have the 
+  [ 52]   0.5169  billing         My bank statement shows a charge in the wrong currency
+  [ 73]   0.4773  billing         My payment method was charged after I removed it from the ac
+  [296]   0.4234  general         What payment methods do you currently support?
+  [ 51]   0.4213  billing         I applied a gift card but the balance wasn't deducted at che
+  recall@5 [billing]: 3/5
+
+RRF fusion (0.00 ms):
+  [200]   0.0325  returns         My account doesn't show the purchase even though I have the 
+  [ 77]   0.0164  billing         My company's purchase order number is missing from the invoi
+  [ 52]   0.0161  billing         My bank statement shows a charge in the wrong currency
+  [ 58]   0.0159  billing         The cashback reward was not applied to my account after the 
+  [ 73]   0.0159  billing         My payment method was charged after I removed it from the ac
+  recall@5 [billing]: 4/5
+
+USearch (0.06 ms):
+  [200]   0.5459  returns         My account doesn't show the purchase even though I have the 
+  [ 52]   0.5169  billing         My bank statement shows a charge in the wrong currency
+  [ 73]   0.4773  billing         My payment method was charged after I removed it from the ac
+  [296]   0.4234  general         What payment methods do you currently support?
+  [ 51]   0.4213  billing         I applied a gift card but the balance wasn't deducted at che
+  recall@5 [billing]: 3/5
+
+Query: "package not delivered to my address" (expected: shipping)
+
+BM25 (0.10 ms):
+  [  5]   5.5982  account         I want to change the email address associated with my accoun
+  [261]   5.5634  general         I need to speak to a human agent, not a chatbot
+  [ 58]   5.4619  billing         The cashback reward was not applied to my account after the 
+  [168]   5.2163  shipping        My gift order was delivered without the gift wrapping I paid
+  [150]   5.1016  shipping        The package was returned to sender without any delivery atte
+  recall@5 [shipping]: 2/5
+
+Cosine (0.02 ms):
+  [130]   0.6953  shipping        The courier marked the parcel as delivered but I never recei
+  [150]   0.6676  shipping        The package was returned to sender without any delivery atte
+  [132]   0.6179  shipping        My order was shipped to the wrong address even though I ente
+  [142]   0.5997  shipping        My package was split into two shipments but only one arrived
+  [129]   0.5744  shipping        My package has been stuck at the regional sorting facility f
+  recall@5 [shipping]: 5/5
+
+RRF fusion (0.00 ms):
+  [150]   0.0315  shipping        The package was returned to sender without any delivery atte
+  [  5]   0.0164  account         I want to change the email address associated with my accoun
+  [130]   0.0164  shipping        The courier marked the parcel as delivered but I never recei
+  [261]   0.0161  general         I need to speak to a human agent, not a chatbot
+  [ 58]   0.0159  billing         The cashback reward was not applied to my account after the 
+  recall@5 [shipping]: 2/5
+
+USearch (0.05 ms):
+  [130]   0.6953  shipping        The courier marked the parcel as delivered but I never recei
+  [150]   0.6676  shipping        The package was returned to sender without any delivery atte
+  [132]   0.6179  shipping        My order was shipped to the wrong address even though I ente
+  [142]   0.5997  shipping        My package was split into two shipments but only one arrived
+  [129]   0.5744  shipping        My package has been stuck at the regional sorting facility f
+  recall@5 [shipping]: 5/5
+
+Query: "want to send the item back for a refund" (expected: returns)
+
+BM25 (0.14 ms):
+  [187]  12.4794  returns         I returned the wrong item by mistake — how do I send back th
+  [ 82]   7.5669  billing         I requested a partial refund for an item I returned but got 
+  [182]   7.4486  returns         I changed my mind and want to return the item — is the retur
+  [193]   7.3066  returns         The replacement unit has the same defect as the original — I
+  [189]   7.0155  returns         I want to exchange for a different colour of the same model
+  recall@5 [returns]: 4/5
+
+Cosine (0.02 ms):
+  [187]   0.7156  returns         I returned the wrong item by mistake — how do I send back th
+  [ 82]   0.7053  billing         I requested a partial refund for an item I returned but got 
+  [192]   0.6585  returns         I received a refund for only part of the order, not all item
+  [201]   0.6476  returns         I returned the item five weeks ago but still only have a sto
+  [176]   0.6450  returns         I need to return a gift but the order is on the buyer's acco
+  recall@5 [returns]: 4/5
+
+RRF fusion (0.00 ms):
+  [187]   0.0328  returns         I returned the wrong item by mistake — how do I send back th
+  [ 82]   0.0323  billing         I requested a partial refund for an item I returned but got 
+  [182]   0.0159  returns         I changed my mind and want to return the item — is the retur
+  [192]   0.0159  returns         I received a refund for only part of the order, not all item
+  [193]   0.0156  returns         The replacement unit has the same defect as the original — I
+  recall@5 [returns]: 4/5
+
+USearch (0.06 ms):
+  [187]   0.7156  returns         I returned the wrong item by mistake — how do I send back th
+  [ 82]   0.7053  billing         I requested a partial refund for an item I returned but got 
+  [192]   0.6585  returns         I received a refund for only part of the order, not all item
+  [201]   0.6476  returns         I returned the item five weeks ago but still only have a sto
+  [176]   0.6450  returns         I need to return a gift but the order is on the buyer's acco
+  recall@5 [returns]: 4/5
+
+Summary — avg over 5 demo queries:
+  BM25: recall@5 3.0/5, 0.10 ms
+  Cosine: recall@5 4.0/5, 0.03 ms
+  RRF fusion: recall@5 3.6/5, 0.01 ms
+  USearch: recall@5 4.0/5, 0.06 ms
+  USearch vs Cosine top-5 overlap: 25/25
+
+Ticket Helper: "want to send the item back for a refund"
+  Suggested category (majority of top-3): returns
+  Closest cluster: "Refund Issues"
+  Similar past tickets:
+    1. [returns] I returned the wrong item by mistake — how do I send back the correct 
+    2. [billing] I requested a partial refund for an item I returned but got nothing
+    3. [returns] I changed my mind and want to return the item — is the return window s

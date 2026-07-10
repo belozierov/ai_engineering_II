@@ -1,0 +1,47 @@
+k=6  inertia=223.66895  ARI=0.540
+Best k=6 (ARI=0.540)
+Clusters:
+  0: Cluster 0 — 46 tickets
+  1: Cluster 1 — 52 tickets
+  2: Cluster 2 — 52 tickets
+  3: Cluster 3 — 42 tickets
+  4: Cluster 4 — 70 tickets
+  5: Cluster 5 — 38 tickets
+
+Query: "the money left my card but the order still shows unpaid"
+
+BM25 (0.18 ms):
+  [138]   9.3170  shipping        I requested contactless delivery but the driver rang the bel
+  [ 96]   9.2623  technical       The keyboard backlight stopped working but the keys still fu
+  [ 70]   9.1631  billing         My bank declined the charge but the order shows as confirmed
+  [ 35]   9.0732  account         The account dashboard shows someone else's order history
+  [139]   9.0171  shipping        A signature was required but the package was left unattended
+
+Cosine (0.04 ms):
+  [ 73]   0.6021  billing         My payment method was charged after I removed it from the ac
+  [ 65]   0.5980  billing         A split payment was only partially processed but my card was
+  [ 51]   0.5965  billing         I applied a gift card but the balance wasn't deducted at che
+  [ 75]   0.5947  billing         The refund was processed but credited to an old card I no lo
+  [ 50]   0.5810  billing         The refund I was promised hasn't appeared on my card after t
+
+RRF fusion (0.01 ms):
+  [ 73]   0.0164  billing         My payment method was charged after I removed it from the ac
+  [138]   0.0164  shipping        I requested contactless delivery but the driver rang the bel
+  [ 65]   0.0161  billing         A split payment was only partially processed but my card was
+  [ 96]   0.0161  technical       The keyboard backlight stopped working but the keys still fu
+  [ 51]   0.0159  billing         I applied a gift card but the balance wasn't deducted at che
+
+USearch (0.07 ms):
+  [ 73]   0.6021  billing         My payment method was charged after I removed it from the ac
+  [ 65]   0.5980  billing         A split payment was only partially processed but my card was
+  [ 51]   0.5965  billing         I applied a gift card but the balance wasn't deducted at che
+  [ 75]   0.5947  billing         The refund was processed but credited to an old card I no lo
+  [ 50]   0.5810  billing         The refund I was promised hasn't appeared on my card after t
+
+Ticket Helper: "the money left my card but the order still shows unpaid"
+  Suggested category (majority of top-3): billing
+  Closest cluster: "Cluster 5"
+  Similar past tickets:
+    1. [billing] My payment method was charged after I removed it from the account
+    2. [shipping] I requested contactless delivery but the driver rang the bell and left
+    3. [billing] A split payment was only partially processed but my card was charged t
