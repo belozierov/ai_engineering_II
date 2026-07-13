@@ -1,0 +1,1 @@
+Write a catchy 3-sentence marketing pitch for a developer tool named 'Git-Burn'. Its main function is to automatically delete git branches that haven't been touched for 30 days and send a Slack notification to the last committer. Target audience: lazy DevOps engineers.

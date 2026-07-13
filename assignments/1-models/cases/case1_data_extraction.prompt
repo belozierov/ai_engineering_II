@@ -1,0 +1,18 @@
+[SYSTEM] Session started at 2026-02-27T14:10:00Z
+2026-02-27 14:10:05.123 INFO  192.168.1.15 GET /api/v1/user/profile 200 45ms
+--- gap in logs ---
+1740665406 WARN  192.168.1.15 GET /api/v1/auth/login 401 12ms (invalid_token)
+1740665408 ERROR 10.0.5.102 POST /api/v1/orders/create 500 1500ms (db_timeout)
+[USER_NOTE]: I think the server is lagging here.
+2026-02-27 14:10:12.445 DEBUG 172.16.0.44 GET /health 200 2ms
+2026-02-27 14:10:15.901 FATAL 192.168.1.88 POST /api/v2/pay 499 30000ms (timeout)
+2026-02-27 14:10:16.001 INFO  UNKNOWN_IP GET /static/logo.png 200 5ms
+2026-02-27 14:10:17.000 ERROR 8.8.8.8 CONNECT google.com:443 "CONNECTION_REFUSED" 0ms
+[DEBUG] Ignoring this internal trace: 0x0045FF2
+2026-02-27 14:10:18.111 INFO  127.0.0.1 GET /admin 403 10ms
+1740665420 WARN  192.168.1.15 GET /api/v1/search?q=AI_Engineering 200 450ms
+2026-02-27 14:10:22.000 INFO 1.1.1.1 GET /favicon.ico 200 1ms
+ERROR: [CRITICAL_SYSTEM_FAILURE] - NO_IP_FOUND - 505 - 0ms - (internal_kernel_panic)
+2026-02-27 14:10:25.123 INFO 192.168.1.15 GET /api/v1/user/settings 200 38ms
+2026-02-27 14:10:26.000 WARN 10.0.0.1 DELETE /account 401 5ms (session_expired)
+[INFO] End of batch. Total processed: 12 lines.

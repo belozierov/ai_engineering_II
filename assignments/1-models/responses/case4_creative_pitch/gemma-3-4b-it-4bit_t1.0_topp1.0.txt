@@ -1,0 +1,16 @@
+# time: 4.7s | cost: n/a
+**Option 1 (Humorous):**
+
+"Stop drowning in a swamp of forgotten branches! Git-Burn automatically cleans up your Git repo, deleting stale branches and giving you back precious time.  Lazy DevOps engineers, rejoice – Git-Burn sends a Slack ping to the last committer so they don't have to lift a finger.”
+
+**Option 2 (Benefit-focused):**
+
+“Tired of manually managing your Git branches? Git-Burn automatically removes inactive branches, simplifying your workflow and boosting team efficiency.  As a lazy DevOps engineer, you deserve a tool that does the hard work for you – Git-Burn sends a Slack notification when a branch is cleaned up."
+
+**Option 3 (Short & Punchy):**
+
+“Git-Burn: Because even lazy DevOps engineers need help. We automatically delete branches that haven't been touched in 30 days and notify the last committer via Slack. Spend less time cleaning, more time doing the important things!”
+
+---
+
+Would you like me to tailor the pitch further based on a specific angle you're going for (e.g., emphasizing ease of use, speed, or a specific benefit)?

@@ -1,0 +1,2 @@
+# time: 1.6s | cost: n/a
+Stop wasting time managing stale branches – Git-Burn automatically cleans up your repository. Our tool identifies and deletes branches untouched for 30 days, freeing up your DevOps time. Get instant Slack notifications when a branch is cleaned, so you always know what's happening without lifting a finger.

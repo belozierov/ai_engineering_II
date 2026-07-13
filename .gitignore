@@ -4,3 +4,14 @@
 # Swift Package Manager build output and Xcode workspace state
 .build/
 .swiftpm/
+# Swift / Xcode
+.build/
+.swiftpm/
+*.profraw
+
+# Locally converted CoreML models (regenerate via scripts/convert_*.py)
+models/
+
+# Python
+__pycache__/
+.venv/

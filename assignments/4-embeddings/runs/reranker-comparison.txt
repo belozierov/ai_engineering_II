@@ -1,0 +1,73 @@
+k=6  inertia=223.66895  ARI=0.540
+Best k=6 (ARI=0.540)
+Clusters:
+  0: Cluster 0 — 46 tickets
+  1: Cluster 1 — 52 tickets
+  2: Cluster 2 — 52 tickets
+  3: Cluster 3 — 42 tickets
+  4: Cluster 4 — 70 tickets
+  5: Cluster 5 — 38 tickets
+
+Query: "I can't log into my account"
+
+BM25 (0.14 ms):
+  [ 23]   8.1597  account         The account activity log shows logins I didn't make
+  [  1]   7.9096  account         Can't log in even though I'm sure the password is correct
+  [ 78]   6.9508  billing         I can't find the billing history section in my account setti
+  [142]   6.3093  shipping        My package was split into two shipments but only one arrived
+  [ 36]   6.2270  account         I can't find any option to download a copy of all my account
+
+Cosine (0.03 ms):
+  [  1]   0.7824  account         Can't log in even though I'm sure the password is correct
+  [  2]   0.6620  account         My account was locked after too many failed login attempts
+  [ 23]   0.5493  account         The account activity log shows logins I didn't make
+  [  8]   0.5453  account         Someone accessed my account without my permission
+  [  0]   0.5216  account         I forgot my password and the reset email never arrives
+
+RRF fusion (0.02 ms):
+  [  1]   0.0325  account         Can't log in even though I'm sure the password is correct
+  [ 23]   0.0323  account         The account activity log shows logins I didn't make
+  [  2]   0.0161  account         My account was locked after too many failed login attempts
+  [ 78]   0.0159  billing         I can't find the billing history section in my account setti
+  [  8]   0.0156  account         Someone accessed my account without my permission
+
+USearch (0.06 ms):
+  [  1]   0.7824  account         Can't log in even though I'm sure the password is correct
+  [  2]   0.6620  account         My account was locked after too many failed login attempts
+  [ 23]   0.5493  account         The account activity log shows logins I didn't make
+  [  8]   0.5453  account         Someone accessed my account without my permission
+  [  0]   0.5216  account         I forgot my password and the reset email never arrives
+
+Ticket Helper: "I can't log into my account"
+  Suggested category (majority of top-3): account
+  Closest cluster: "Cluster 0"
+  Similar past tickets:
+    1. [account] Can't log in even though I'm sure the password is correct
+    2. [account] The account activity log shows logins I didn't make
+    3. [account] My account was locked after too many failed login attempts
+
+Reranker comparison — query: "I can't log into my account"
+
+[ms-marco]
+  1.   +3.197  account         Can't log in even though I'm sure the password is correct
+  2.   +0.408  account         The account activity log shows logins I didn't make
+  3.   -1.562  account         My account was locked after too many failed login attempts
+  4.   -3.836  account         Someone accessed my account without my permission
+  5.   -9.695  account         I forgot my password and the reset email never arrives
+  load 1 402 ms, score 693 ms
+
+[bge-base]
+  1.   +3.094  account         Someone accessed my account without my permission
+  2.   +2.707  account         Can't log in even though I'm sure the password is correct
+  3.   +1.088  account         The account activity log shows logins I didn't make
+  4.   +0.644  account         My account was locked after too many failed login attempts
+  5.   -4.453  account         I forgot my password and the reset email never arrives
+  load 5 533 ms, score 390 ms
+
+[bge-v2-m3]
+  1.   +1.735  account         Can't log in even though I'm sure the password is correct
+  2.   +1.620  account         My account was locked after too many failed login attempts
+  3.   -0.099  account         Someone accessed my account without my permission
+  4.   -5.162  account         The account activity log shows logins I didn't make
+  5.   -5.178  account         I forgot my password and the reset email never arrives
+  load 11 581 ms, score 1 538 ms

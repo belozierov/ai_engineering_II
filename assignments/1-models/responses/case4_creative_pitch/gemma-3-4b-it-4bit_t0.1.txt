@@ -1,0 +1,21 @@
+# time: 6.3s | cost: n/a
+Okay, here are a few options for a 3-sentence marketing pitch for Git-Burn, targeting lazy DevOps engineers:
+
+**Option 1 (Humorous & Direct):**
+
+“Stop drowning in a sea of stale branches! Git-Burn automatically cleans up your Git repo, deleting untouched branches and notifying the last committer via Slack – because let’s be honest, you’ve got better things to do than manage clutter.  Get Git-Burn and reclaim your sanity (and your bandwidth).”
+
+**Option 2 (Benefit-Focused):**
+
+“Tired of manually tidying up your Git branches? Git-Burn keeps your repository lean and efficient by automatically deleting branches that haven't seen activity in 30 days. Plus, a quick Slack notification lets the last committer know – so you can focus on the *real* DevOps work.”
+
+**Option 3 (Short & Sweet):**
+
+“Lazy DevOps engineers, rejoice! Git-Burn automatically cleans up old branches and alerts the last committer via Slack.  Just install it and let Git-Burn do the work – seriously, it's that easy.”
+
+---
+
+**To help me refine the pitch even further, could you tell me:**
+
+*   **What's the overall brand tone you're going for?** (e.g., playful, serious, helpful, edgy?)
+*   **Is there a specific feature you want to highlight *beyond* the branch deletion and Slack notification?** (e.g., ease of installation, speed, integration with other tools?)
