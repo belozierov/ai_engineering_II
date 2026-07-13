@@ -1,0 +1,10 @@
+.build/
+.index/
+.index-adversarial/
+.index-title/
+.index-contextual/
+.context-cache/
+fm-index.log
+fm-results.log
+fm-monitor.sh
+default.profraw

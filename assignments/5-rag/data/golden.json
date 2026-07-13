@@ -1,0 +1,151 @@
+[
+  {
+    "query": "What is the most famous landmark in Paris?",
+    "expected_titles": [
+      "Eiffel Tower"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "How many people died on the Titanic?",
+    "expected_titles": [
+      "Titanic"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "When was the Eiffel Tower built and why was it built?",
+    "expected_titles": [
+      "Eiffel Tower"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "Compare Paris and the Eiffel Tower. What is the relation between them?",
+    "expected_titles": [
+      "Paris",
+      "Eiffel Tower"
+    ],
+    "type": "multihop"
+  },
+  {
+    "query": "Who won the 2025 NBA Finals and what was the score?",
+    "expected_titles": [],
+    "type": "no_evidence"
+  },
+  {
+    "query": "When did the Titanic sink?",
+    "expected_titles": [
+      "Titanic"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "What is the Sun?",
+    "expected_titles": [
+      "Sun"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "What is photosynthesis?",
+    "expected_titles": [
+      "Photosynthesis"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "What is the Internet?",
+    "expected_titles": [
+      "Internet"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "What is alchemy?",
+    "expected_titles": [
+      "Alchemy"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "Who was the actor Cary Grant?",
+    "expected_titles": [
+      "Cary Grant"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "Who was David Niven?",
+    "expected_titles": [
+      "David Niven"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "What was the Mali Empire?",
+    "expected_titles": [
+      "Mali Empire"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "What does neurology study?",
+    "expected_titles": [
+      "Neurology"
+    ],
+    "type": "single"
+  },
+  {
+    "query": "How does the Sun enable photosynthesis in plants?",
+    "expected_titles": [
+      "Sun",
+      "Photosynthesis"
+    ],
+    "type": "multihop"
+  },
+  {
+    "query": "How are the Sun, gravity, and photosynthesis connected in nature?",
+    "expected_titles": [
+      "Sun",
+      "Gravity",
+      "Photosynthesis"
+    ],
+    "type": "multihop"
+  },
+  {
+    "query": "What do the city of Paris, the Eiffel Tower, and the Paris-Roubaix race have in common?",
+    "expected_titles": [
+      "Paris",
+      "Eiffel Tower",
+      "Paris-Roubaix"
+    ],
+    "type": "multihop"
+  },
+  {
+    "query": "How does the Sun's gravity hold the solar system together?",
+    "expected_titles": [
+      "Sun",
+      "Gravity"
+    ],
+    "type": "multihop"
+  },
+  {
+    "query": "How does a pyramid compare in height to the Eiffel Tower?",
+    "expected_titles": [
+      "Pyramid",
+      "Eiffel Tower"
+    ],
+    "type": "multihop"
+  },
+  {
+    "query": "What is the price of Bitcoin today?",
+    "expected_titles": [],
+    "type": "no_evidence"
+  },
+  {
+    "query": "What did the CEO of this course say in the last meeting?",
+    "expected_titles": [],
+    "type": "no_evidence"
+  }
+]
