@@ -1,0 +1,32 @@
+{
+  "artifacts": [
+    {
+      "bytes": 1802,
+      "content_sha256": "f4a067a9f00e8887e4f0327432925eefa6976eadb7a70a1fdb77fb3a6e4d9f39",
+      "path": "source/checkout-service/manifest.json"
+    },
+    {
+      "bytes": 564,
+      "content_sha256": "729e71a058eecb1a2c767173a542cdfefe45ff10fd2f541f0b5cff8690187acc",
+      "path": "monitoring/manifest.json"
+    },
+    {
+      "bytes": 2287,
+      "content_sha256": "cc2c2d96e9e80a3fc4318e19169040a4d17c15c3f110e611a8f99ea34cdc21c0",
+      "path": "runbooks/index_manifest.json"
+    },
+    {
+      "bytes": 21208,
+      "content_sha256": "5b2dbd06130264384af2dadc422c4dcc58c9bb4dbd40513d4b5f11380a97af4d",
+      "path": "runbooks/index/vectors.json"
+    },
+    {
+      "bytes": 3906,
+      "content_sha256": "c774bba191da22f4f6f2aa8807203ac13b892fc48ddc0f7ced5aa446a131a236",
+      "path": "eval/scenarios.json"
+    }
+  ],
+  "logical_digest": "b2f21954d58b7cf356e9a6901c6f1eb79ea6c6ccd564ddada6743cd2b7d5f7a3",
+  "schema_version": 1,
+  "synthetic": true
+}

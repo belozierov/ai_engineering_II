@@ -1,0 +1,4 @@
+2026-07-20T12:00:02Z level=INFO service=checkout-service deploy=deploy-synthetic-042 message="deployment completed"
+2026-07-20T12:01:04Z level=ERROR service=checkout-service request_id=req-test-001 dependency=tax-service elapsed_ms=201 error="upstream timeout"
+2026-07-20T12:01:06Z level=ERROR service=checkout-service request_id=req-test-002 dependency=tax-service elapsed_ms=202 error="upstream timeout"
+2026-07-20T12:02:00Z level=WARN service=checkout-service error_rate=0.184 message="synthetic SLO burn"

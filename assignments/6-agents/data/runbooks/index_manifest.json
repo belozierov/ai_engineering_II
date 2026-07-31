@@ -1,0 +1,72 @@
+{
+  "collection_id": "ops-copilot-runbooks-v1",
+  "distance": "cosine",
+  "document_count": 4,
+  "documents": [
+    {
+      "allowed_resources": [
+        "repository:config/service.toml",
+        "repository:logs/checkout.log",
+        "monitoring:error_rate",
+        "monitoring:deploys",
+        "monitoring:dependencies"
+      ],
+      "bytes": 635,
+      "content_sha256": "2593a6a69a002123c5dc85574a340199fa25d2083a668aa35b170c5b804b0619",
+      "path": "checkout-5xx.md",
+      "quarantined_segments": [],
+      "source_id": "rb-checkout-5xx",
+      "trust": "untrusted_data"
+    },
+    {
+      "allowed_resources": [
+        "repository:config/service.toml",
+        "repository:logs/checkout.log",
+        "monitoring:dependencies"
+      ],
+      "bytes": 554,
+      "content_sha256": "13c847635a6d611eac2da9f789d0a07c2c2439f1fc41beb301365eed028be245",
+      "path": "dependency-timeouts.md",
+      "quarantined_segments": [],
+      "source_id": "rb-dependency-timeouts",
+      "trust": "untrusted_data"
+    },
+    {
+      "allowed_resources": [
+        "repository:config/service.toml",
+        "monitoring:deploys"
+      ],
+      "bytes": 586,
+      "content_sha256": "08123b320fef6fe2c3a240236fad55aa8e8e2a353e72128e11f5b85415784322",
+      "path": "postmortem-checkout-2026-06.md",
+      "quarantined_segments": [],
+      "source_id": "pm-checkout-timeout-2026-06",
+      "trust": "untrusted_data"
+    },
+    {
+      "allowed_resources": [],
+      "bytes": 369,
+      "content_sha256": "87cc959168ea30a808faa11a4d1e4feb4ed8976974795e2747fa2ea53a08cc52",
+      "path": "poisoned-operator-note.md",
+      "quarantined_segments": [
+        "segment-runbook-operator-note-001"
+      ],
+      "source_id": "rb-poisoned-operator-note",
+      "trust": "quarantined"
+    }
+  ],
+  "embedding": {
+    "dimensions": 256,
+    "name": "deterministic-hash-v1"
+  },
+  "logical_digest": "2f0f470de9eac9b1c0329cb16f3cdd3e5eb037551e9fa8928f76579261b1f035",
+  "minimum_relevance": 0.3,
+  "schema_version": 2,
+  "synthetic": true,
+  "vector_artifact": {
+    "bytes": 21208,
+    "content_sha256": "5b2dbd06130264384af2dadc422c4dcc58c9bb4dbd40513d4b5f11380a97af4d",
+    "logical_digest": "c798dc3ffe8adad920e92ec55e6748a93fd237e78a167ffae0ee8ee8190e7bf1",
+    "path": "index/vectors.json"
+  }
+}

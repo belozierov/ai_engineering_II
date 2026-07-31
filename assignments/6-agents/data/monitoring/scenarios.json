@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "synthetic": true,
+  "service": "checkout-service",
+  "health": {
+    "service": "checkout-service",
+    "status": "degraded",
+    "checked_at": "2026-07-20T12:02:00Z"
+  },
+  "error_rates": {
+    "5": 0.196,
+    "10": 0.184,
+    "30": 0.071
+  },
+  "deploys": [
+    {
+      "deploy_id": "deploy-synthetic-042",
+      "service": "checkout-service",
+      "deployed_at": "2026-07-20T12:00:00Z",
+      "revision": "rev-synthetic-timeout-02"
+    },
+    {
+      "deploy_id": "deploy-synthetic-041",
+      "service": "checkout-service",
+      "deployed_at": "2026-07-18T09:00:00Z",
+      "revision": "rev-synthetic-stable-01"
+    },
+    {
+      "deploy_id": "deploy-synthetic-040",
+      "service": "checkout-service",
+      "deployed_at": "2026-07-15T08:30:00Z",
+      "revision": "rev-synthetic-ui-07"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependency": "tax-service",
+      "status": "slow",
+      "p95_ms": 238
+    },
+    {
+      "dependency": "inventory-service",
+      "status": "healthy",
+      "p95_ms": 42
+    },
+    {
+      "dependency": "payment-service",
+      "status": "healthy",
+      "p95_ms": 57
+    }
+  ],
+  "dead_end": {
+    "service": "checkout-service",
+    "signal": "no_matching_timeseries",
+    "detail": "The synthetic region-level series is intentionally absent; revise the plan."
+  }
+}

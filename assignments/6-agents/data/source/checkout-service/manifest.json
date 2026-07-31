@@ -1,0 +1,65 @@
+{
+  "files": [
+    {
+      "allowed_resources": [
+        "repository:config/service.toml"
+      ],
+      "bytes": 169,
+      "content_sha256": "b1f0d11e275ae3a7e334ad5e5a337e6b70ac39b4979185ff534429df4e5da656",
+      "path": "config/service.toml",
+      "quarantined_segments": [],
+      "trust": "untrusted_data"
+    },
+    {
+      "allowed_resources": [
+        "repository:logs/checkout.log"
+      ],
+      "bytes": 509,
+      "content_sha256": "e9a56603bb09eb2161642c37cf99edb9de92ae93a3c63b72f45886401342bd63",
+      "path": "logs/checkout.log",
+      "quarantined_segments": [],
+      "trust": "untrusted_data"
+    },
+    {
+      "allowed_resources": [],
+      "bytes": 278,
+      "content_sha256": "1afe427b0cd4fddda2a16ce9296d980010fa3e0df640b5e6dd13e9536d56acbd",
+      "path": "logs/maintenance.log",
+      "quarantined_segments": [
+        "segment-source-maintenance-001"
+      ],
+      "trust": "quarantined"
+    },
+    {
+      "allowed_resources": [
+        "repository:src/checkout.py"
+      ],
+      "bytes": 500,
+      "content_sha256": "6aa7ef55d7d9a1a11ee718a82465f06457028102328660f57116f79c69d3cbff",
+      "path": "src/checkout.py",
+      "quarantined_segments": [],
+      "trust": "untrusted_data"
+    },
+    {
+      "allowed_resources": [
+        "repository:src/tax_client.py"
+      ],
+      "bytes": 411,
+      "content_sha256": "cc3369a2a9b9cc1e066dc9a86d3593d13c8054283373b29799168cf06e17fd0a",
+      "path": "src/tax_client.py",
+      "quarantined_segments": [],
+      "trust": "untrusted_data"
+    }
+  ],
+  "quarantined_segments": [
+    {
+      "allowed_resources": [],
+      "path": "logs/maintenance.log",
+      "segment_id": "segment-source-maintenance-001"
+    }
+  ],
+  "read_only": true,
+  "schema_version": 1,
+  "service": "checkout-service",
+  "synthetic": true
+}

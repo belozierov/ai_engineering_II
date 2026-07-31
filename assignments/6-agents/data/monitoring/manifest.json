@@ -1,0 +1,25 @@
+{
+  "allowed_resources": [
+    "monitoring:dead_end",
+    "monitoring:dependencies",
+    "monitoring:deploys",
+    "monitoring:error_rate",
+    "monitoring:health"
+  ],
+  "allowed_routes": [
+    "/v1/health",
+    "/v1/error-rate",
+    "/v1/deploys",
+    "/v1/dependencies",
+    "/v1/dead-end"
+  ],
+  "fixture": {
+    "bytes": 1338,
+    "content_sha256": "1fedd05b382edadba38e8f003f6289a887c3b5978a75a0c2d4298d561e264e7c",
+    "path": "scenarios.json"
+  },
+  "quarantined_segments": [],
+  "schema_version": 1,
+  "service": "checkout-service",
+  "synthetic": true
+}
