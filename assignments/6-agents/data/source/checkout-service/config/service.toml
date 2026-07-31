@@ -1,0 +1,5 @@
+service = "checkout-service"
+environment = "synthetic-course"
+tax_service_url = "http://tax-service.synthetic.test"
+tax_service_timeout_seconds = 0.2
+retry_attempts = 0
