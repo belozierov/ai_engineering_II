@@ -69,7 +69,7 @@ let package = Package(
                 .product(name: "JSONSchema", package: "JSONSchema")
             ]
         ),
-        .target(name: "OpsCompaction", dependencies: ["OpsCore"]),
+        .target(name: "OpsCompaction", dependencies: ["OpsCore", "ClaudeTranscript"]),
         .target(name: "OpsEvidenceGuard", dependencies: ["OpsCore"]),
         .target(
             name: "OpsAgent",
@@ -79,10 +79,37 @@ let package = Package(
                 "OpsFactMemory",
                 "OpsProcedures",
                 "OpsCompaction",
-                "OpsEvidenceGuard"
+                "OpsEvidenceGuard",
+                "ClaudeDomain",
+                "ClaudeMCP",
+                "ClaudeCLI",
+                "ClaudeTranscript",
+                "ClaudeSessions",
+                .product(name: "JSONSchema", package: "JSONSchema")
             ]
         ),
-        .executableTarget(name: "ops-cli", dependencies: ["OpsAgent"]),
+        .target(
+            name: "OpsCLI",
+            dependencies: [
+                "OpsAgent",
+                "OpsCore",
+                "OpsSourceTools",
+                "OpsFactMemory",
+                "OpsProcedures",
+                "ClaudeDomain"
+            ]
+        ),
+        .executableTarget(
+            name: "ops-cli",
+            dependencies: [
+                "OpsCLI",
+                "OpsAgent",
+                "OpsCore",
+                "OpsSourceTools",
+                "ClaudeDomain",
+                "ClaudeMCP"
+            ]
+        ),
         .executableTarget(
             name: "ops-spike",
             dependencies: [
@@ -96,7 +123,38 @@ let package = Package(
             ]
         ),
         .testTarget(name: "OpsCoreTests", dependencies: ["OpsCore"]),
+        .testTarget(
+            name: "OpsAgentTests",
+            dependencies: [
+                "OpsAgent",
+                "OpsCore",
+                "OpsCompaction",
+                "OpsEvidenceGuard",
+                "OpsSourceTools",
+                "OpsFactMemory",
+                "OpsProcedures",
+                "ClaudeDomain",
+                "ClaudeMCP",
+                .product(name: "JSONSchema", package: "JSONSchema"),
+                .product(name: "MCP", package: "swift-sdk")
+            ]
+        ),
+        .testTarget(
+            name: "OpsCLITests",
+            dependencies: [
+                "OpsCLI",
+                "OpsAgent",
+                "OpsCore",
+                "OpsEvidenceGuard",
+                "OpsSourceTools",
+                "ClaudeDomain"
+            ]
+        ),
         .testTarget(name: "OpsEvidenceGuardTests", dependencies: ["OpsEvidenceGuard", "OpsCore"]),
+        .testTarget(
+            name: "OpsCompactionTests",
+            dependencies: ["OpsCompaction", "OpsCore", "ClaudeTranscript"]
+        ),
         .testTarget(
             name: "OpsSourceToolsTests",
             dependencies: [

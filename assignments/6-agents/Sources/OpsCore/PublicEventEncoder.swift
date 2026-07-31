@@ -7,6 +7,8 @@ public struct PublicEventEncoder: Sendable {
 
 	public static let recordKey = "record"
 	public static let eventRecord = "event"
+	public static let turnResultRecord = "turn_result"
+	public static let planRecord = "plan"
 
 	public init() {}
 
@@ -15,7 +17,15 @@ public struct PublicEventEncoder: Sendable {
 	}
 
 	public func jsonlRecord(for event: AppEvent) throws -> String {
-		try line(encoding: Record(event: event))
+		try line(encoding: Record(event, kind: Self.eventRecord))
+	}
+
+	public func jsonlRecord(for result: TurnResult) throws -> String {
+		try line(encoding: Record(result, kind: Self.turnResultRecord))
+	}
+
+	public func jsonlRecord(for plan: PlanRecord) throws -> String {
+		try line(encoding: Record(plan, kind: Self.planRecord))
 	}
 
 	private func line(encoding value: some Encodable) throws -> String {
@@ -28,19 +38,28 @@ public struct PublicEventEncoder: Sendable {
 		return line
 	}
 
-	private struct Record: Encodable {
+	// One wrapper for every record kind: the wrapped value writes its own fields, then the discriminator
+	// joins them in the same object rather than nesting them under an envelope. Sorted keys then place
+	// `record` wherever the alphabet puts it, which is what keeps a line byte-identical between encodes.
+	private struct Record<Value: Encodable>: Encodable {
 
 		enum CodingKeys: String, CodingKey {
 
 			case record
 		}
 
-		let event: AppEvent
+		let value: Value
+		let kind: String
+
+		init(_ value: Value, kind: String) {
+			self.value = value
+			self.kind = kind
+		}
 
 		func encode(to encoder: Encoder) throws {
-			try event.encode(to: encoder)
+			try value.encode(to: encoder)
 			var container = encoder.container(keyedBy: CodingKeys.self)
-			try container.encode(PublicEventEncoder.eventRecord, forKey: .record)
+			try container.encode(kind, forKey: .record)
 		}
 	}
 }

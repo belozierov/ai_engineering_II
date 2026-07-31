@@ -84,6 +84,99 @@ struct PublicEventEncoderTests {
 			"count", "artifact_id"])
 	}
 
+	@Test
+	func turnResultRecordsCarryEveryFieldAndTheirNestedEvidence() throws {
+		let line = try PublicEventEncoder().jsonlRecord(for: Self.turnResult())
+
+		#expect(line == """
+			{"answer":"See /v1/health [evidence:evidence-test-jsonl-1].",\
+			"evidence":[{"allowed_resources":["runbook:checkout-5xx"],"evidence_id":"evidence-test-jsonl-1",\
+			"identity_id":"identity-test-jsonl","provenance":{"content_sha256":"\(Self.digest)",\
+			"source_family":"runbook","source_id":"runbook:checkout-5xx"},"run_id":"run-test-jsonl-turn",\
+			"status":"issued","trust":"untrusted_data"}],"identity_id":"identity-test-jsonl",\
+			"quarantined_segments":["segment-source-maintenance-001"],"record":"turn_result",\
+			"run_id":"run-test-jsonl-turn","source_ids":["runbook:checkout-5xx"],"thread_id":"thread-test-jsonl",\
+			"tool_names":["search_runbooks"],"turn_status":"completed"}
+			""")
+		#expect(!line.contains("\n"))
+		#expect(!line.contains("\\/"))
+	}
+
+	// The discriminator is a key of the record object, not an envelope around it, so sorted keys drop it
+	// between `quarantined_segments` and `run_id` rather than at the front of the line.
+	@Test
+	func theRecordKeyIsSortedInAmongTheRecordsOwnFields() throws {
+		let line = try PublicEventEncoder().jsonlRecord(for: Self.turnResult())
+
+		#expect(line.contains("\"quarantined_segments\":[\"segment-source-maintenance-001\"],\"record\":\"turn_result\",\"run_id\""))
+		#expect(!line.hasPrefix("{\"record\""))
+	}
+
+	@Test
+	func planRecordsRenderItemTextAndRawStateValuesInOrder() throws {
+		let plan = try PlanRecord(runID: "run-test-jsonl-plan", items: [
+			PlanSnapshotTracker.TodoItem(text: "Read the checkout logs", state: .completed),
+			PlanSnapshotTracker.TodoItem(text: "Search runbooks for 5xx", state: .inProgress),
+			PlanSnapshotTracker.TodoItem(text: "Answer with citations", state: .pending)
+		])
+
+		let line = try PublicEventEncoder().jsonlRecord(for: plan)
+
+		#expect(line == """
+			{"items":[{"state":"completed","text":"Read the checkout logs"},\
+			{"state":"in_progress","text":"Search runbooks for 5xx"},\
+			{"state":"pending","text":"Answer with citations"}],"record":"plan","run_id":"run-test-jsonl-plan"}
+			""")
+	}
+
+	// A run where the model never called write_todos still gets a plan line: an empty list says the run
+	// planned nothing, where a missing line would be indistinguishable from a lost one.
+	@Test
+	func plansWithoutItemsAreStillRecords() throws {
+		let plan = try PlanRecord(runID: "run-test-jsonl-empty", items: [])
+
+		#expect(plan.items.isEmpty)
+		#expect(try PublicEventEncoder().jsonlRecord(for: plan) == """
+			{"items":[],"record":"plan","run_id":"run-test-jsonl-empty"}
+			""")
+	}
+
+	@Test
+	func planRecordsRefuseUnboundedItemListsAndUnopaqueRuns() throws {
+		let item = try PlanSnapshotTracker.TodoItem(text: "step", state: .pending)
+
+		#expect(throws: ContractError.self) {
+			try PlanRecord(runID: "run-test-jsonl-plan", items: Array(repeating: item, count: PlanRecord.maximumItems + 1))
+		}
+		#expect(throws: ContractError.self) { try PlanRecord(runID: "run test/jsonl", items: [item]) }
+	}
+
+	private static let digest = String(repeating: "b", count: 64)
+
+	private static func turnResult() throws -> TurnResult {
+		let evidence = try Evidence(
+			evidenceID: "evidence-test-jsonl-1",
+			identityID: "identity-test-jsonl",
+			runID: "run-test-jsonl-turn",
+			provenance: ProvenanceRef(sourceFamily: .runbook, sourceID: "runbook:checkout-5xx", contentSHA256: digest),
+			status: .issued,
+			trust: .untrustedData,
+			allowedResources: ["runbook:checkout-5xx"]
+		)
+
+		return try TurnResult(
+			runID: "run-test-jsonl-turn",
+			identityID: "identity-test-jsonl",
+			threadID: "thread-test-jsonl",
+			turnStatus: .completed,
+			answer: "See /v1/health [evidence:evidence-test-jsonl-1].",
+			toolNames: ["search_runbooks"],
+			sourceIDs: ["runbook:checkout-5xx"],
+			quarantinedSegments: ["segment-source-maintenance-001"],
+			evidence: [evidence]
+		)
+	}
+
 	private static func keys(of json: String) throws -> Set<String> {
 		let value = try JSONSerialization.jsonObject(with: Data(json.utf8))
 		guard let object = value as? [String: Any] else { throw ContractError("test json is not an object") }
