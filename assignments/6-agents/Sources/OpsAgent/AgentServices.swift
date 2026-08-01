@@ -21,11 +21,24 @@ public struct AgentServices: Sendable {
 
 	// The sink has to be constructed with the same scope secret this identity carries, or scoped emission
 	// throws; CollectingEventSink is the in-process one, and it takes the secret at construction.
-	public init(identity: IdentityStore.Identity, sink: any EventSink, identifiers: AgentIdentifiers = AgentIdentifiers()) {
+	//
+	// The content recorder is defaulted away because a run that has one is not the product: it is an
+	// evaluation harness reaching for the source text the protocol deliberately withholds, and every other
+	// caller composes exactly the services it composed before.
+	public init(
+		identity: IdentityStore.Identity,
+		sink: any EventSink,
+		identifiers: AgentIdentifiers = AgentIdentifiers(),
+		contentRecorder: (any EvidenceContentRecorder)? = nil
+	) {
 		self.identity = identity
 		self.identifiers = identifiers
 		self.sink = sink
-		registry = TurnEvidenceRegistry(secret: identity.secret, newID: identifiers.evidence)
+		registry = TurnEvidenceRegistry(
+			secret: identity.secret,
+			newID: identifiers.evidence,
+			contentRecorder: contentRecorder
+		)
 		evidenceGuard = EvidenceGuard(resolver: registry)
 		planTracker = PlanSnapshotTracker(secret: identity.secret, newID: identifiers.plan, sink: sink)
 		planLedger = PlanLedger()

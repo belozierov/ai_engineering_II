@@ -52,7 +52,7 @@ struct ReportRenderingTests {
 
 		#expect(rendered.contains("""
 			Optional live quality
-			  [UNAVAILABLE] live.not-requested: run with --full
+			  [UNAVAILABLE] live.not-requested: run with swift_eval.py --full
 			"""))
 		#expect(rendered.hasSuffix("Core INCOMPLETE: 0 pass, 0 fail, 0 skip, 0 unavailable"))
 	}

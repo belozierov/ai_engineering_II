@@ -89,7 +89,7 @@ public struct EvaluationReport: Sendable {
 
 		lines += ["", "Optional live quality"]
 		lines += liveResults.isEmpty
-			? ["  [UNAVAILABLE] live.not-requested: run with --full"]
+			? ["  [UNAVAILABLE] live.not-requested: run with swift_eval.py --full"]
 			: liveResults.map(\.renderedLine)
 
 		let counts = Dictionary(grouping: coreResults, by: \.state).mapValues(\.count)

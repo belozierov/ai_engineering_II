@@ -14,15 +14,16 @@ public struct CLIOptions: Hashable, Sendable {
 		ops-cli — the ops copilot operator console.
 
 		Usage:
-		  ops-cli [--thread <id>] [--json] [--workspace <path>] [--data <path>]
+		  ops-cli [--thread <id>] [--json] [--workspace <path>] [--data <path>] [--excerpts-file <path>]
 		  ops-cli smoke       one live turn against the configured model over the shipped snapshot
 		  ops-cli \(CLICommand.proxy)   internal: the MCP stdio proxy claude re-invokes
 
 		Options:
-		  --thread <id>       logical conversation to start on (default: \(defaultThread))
-		  --json              emit the JSONL protocol on stdout instead of the human trace
-		  --workspace <path>  private workspace directory (default: ./\(defaultWorkspaceName))
-		  --data <path>       validated fixture directory (default: ./\(defaultDataName))
+		  --thread <id>           logical conversation to start on (default: \(defaultThread))
+		  --json                  emit the JSONL protocol on stdout instead of the human trace
+		  --workspace <path>      private workspace directory (default: ./\(defaultWorkspaceName))
+		  --data <path>           validated fixture directory (default: ./\(defaultDataName))
+		  --excerpts-file <path>  (eval only) append the full text behind every issued evidence ID as JSONL
 		"""
 
 	public let thread: String
@@ -30,11 +31,17 @@ public struct CLIOptions: Hashable, Sendable {
 	public let workspace: URL
 	public let data: URL
 
-	public init(thread: String, isJSON: Bool, workspace: URL, data: URL) {
+	// Off unless a harness asks for it, and outside the console's contract when it does: the protocol on
+	// stdout carries evidence as provenance and a digest, and this names the file the content goes to
+	// instead. Nothing an operator does turns it on by accident, because nothing but this flag does.
+	public let excerptsFile: URL?
+
+	public init(thread: String, isJSON: Bool, workspace: URL, data: URL, excerptsFile: URL? = nil) {
 		self.thread = thread
 		self.isJSON = isJSON
 		self.workspace = workspace
 		self.data = data
+		self.excerptsFile = excerptsFile
 	}
 
 	// MARK: Parsing
@@ -44,6 +51,7 @@ public struct CLIOptions: Hashable, Sendable {
 		var isJSON = false
 		var workspace = directory.appending(path: defaultWorkspaceName, directoryHint: .isDirectory)
 		var data = directory.appending(path: defaultDataName, directoryHint: .isDirectory)
+		var excerptsFile: URL?
 
 		var remaining = arguments[...]
 		while let argument = remaining.popFirst() {
@@ -56,11 +64,20 @@ public struct CLIOptions: Hashable, Sendable {
 
 			case Flag.data.rawValue: data = directory.resolving(try value(from: &remaining))
 
+			case Flag.excerptsFile.rawValue:
+				excerptsFile = directory.resolving(try value(from: &remaining), directoryHint: .notDirectory)
+
 			default: throw CLIUsageError()
 			}
 		}
 
-		return CLIOptions(thread: thread, isJSON: isJSON, workspace: workspace, data: data)
+		return CLIOptions(
+			thread: thread,
+			isJSON: isJSON,
+			workspace: workspace,
+			data: data,
+			excerptsFile: excerptsFile
+		)
 	}
 
 	private static func value(from remaining: inout ArraySlice<String>) throws -> String {
@@ -75,6 +92,7 @@ public struct CLIOptions: Hashable, Sendable {
 		case json = "--json"
 		case workspace = "--workspace"
 		case data = "--data"
+		case excerptsFile = "--excerpts-file"
 	}
 }
 
@@ -91,8 +109,8 @@ public struct CLIUsageError: Error, Hashable, Sendable {
 
 private extension URL {
 
-	func resolving(_ path: String) -> URL {
-		let candidate = URL(filePath: path, directoryHint: .isDirectory, relativeTo: self)
+	func resolving(_ path: String, directoryHint: DirectoryHint = .isDirectory) -> URL {
+		let candidate = URL(filePath: path, directoryHint: directoryHint, relativeTo: self)
 
 		return candidate.absoluteURL.standardizedFileURL
 	}

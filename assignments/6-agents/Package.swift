@@ -110,7 +110,8 @@ let package = Package(
                 "OpsProcedures",
                 "OpsCompaction",
                 "OpsEvidenceGuard",
-                "ClaudeDomain"
+                "ClaudeDomain",
+                "ClaudeCLI"
             ]
         ),
         .executableTarget(
@@ -124,6 +125,7 @@ let package = Package(
                 "ClaudeMCP"
             ]
         ),
+        .executableTarget(name: "ops-eval", dependencies: ["OpsEval"]),
         .executableTarget(
             name: "ops-spike",
             dependencies: [

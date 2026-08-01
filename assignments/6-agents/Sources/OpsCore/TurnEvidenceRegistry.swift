@@ -40,15 +40,24 @@ public actor TurnEvidenceRegistry {
 	private let secret: ScopeSecret
 	private let newID: IdentifierGenerator
 
+	// Absent in every run that did not ask for one, which is what keeps the content this registry sees on
+	// its way through it and nowhere else.
+	private let contentRecorder: (any EvidenceContentRecorder)?
+
 	private var activeTurns: [String: Turn] = [:]
 
 	// Every identifier ever minted, against the opaque identity that was issued it: the values decide
 	// stale from unknown, the keys keep a collision from ever being minted twice process-wide.
 	private var issuingIdentities: [String: String] = [:]
 
-	public init(secret: ScopeSecret, newID: @escaping IdentifierGenerator) {
+	public init(
+		secret: ScopeSecret,
+		newID: @escaping IdentifierGenerator,
+		contentRecorder: (any EvidenceContentRecorder)? = nil
+	) {
 		self.secret = secret
 		self.newID = newID
+		self.contentRecorder = contentRecorder
 	}
 
 	// MARK: Turn lifecycle
@@ -102,6 +111,10 @@ public actor TurnEvidenceRegistry {
 		// In place: reading the turn out and writing it back copies all 256 records per issuance.
 		activeTurns[scope]?.append(evidence)
 		issuingIdentities[evidence.evidenceID] = identityDigest(for: context)
+
+		// Last, and only once the issuance has actually happened: a recorder observes what was issued, so
+		// nothing it is handed can belong to a record the guards above refused.
+		contentRecorder?.record(evidence, content: result.content)
 
 		return evidence
 	}

@@ -28,6 +28,7 @@ public struct ConsoleStack: Sendable {
 	public let sink: CLIEventSink
 
 	private let monitoring: MonitoringFixtureServer
+	private let excerpts: EvidenceExcerptFile?
 
 	// The live transport is a default rather than the only option: an offline test drives a whole turn
 	// through this same composition with a scripted one, and the eval harness may want the same seam.
@@ -47,7 +48,15 @@ public struct ConsoleStack: Sendable {
 
 		let identity = try IdentityStore(root: workspace.identity).loadOrCreate()
 		let sink = CLIEventSink(renderer: renderer)
-		let services = AgentServices(identity: identity, sink: sink, identifiers: identifiers)
+		// Opened before anything is started, for the same reason the catalog is checked first: a path the
+		// harness cannot be given is a refused startup rather than a session that records half of itself.
+		let excerpts = try options.excerptsFile.map(EvidenceExcerptFile.init(url:))
+		let services = AgentServices(
+			identity: identity,
+			sink: sink,
+			identifiers: identifiers,
+			contentRecorder: excerpts
+		)
 
 		let sandbox = try SourceSandbox.fromManifest(root: catalog.sourceSnapshotURL, workspaceRoot: workspace.sandbox)
 		let runbooks = try RunbookIndex(
@@ -80,6 +89,7 @@ public struct ConsoleStack: Sendable {
 				identity: identity,
 				sink: sink,
 				monitoring: server,
+				excerpts: excerpts,
 				composition: AgentComposition(
 					services: services,
 					makeToolset: { services in
@@ -110,17 +120,20 @@ public struct ConsoleStack: Sendable {
 		identity: IdentityStore.Identity,
 		sink: CLIEventSink,
 		monitoring: MonitoringFixtureServer,
+		excerpts: EvidenceExcerptFile?,
 		composition: AgentComposition
 	) {
 		self.identity = identity
 		self.sink = sink
 		self.monitoring = monitoring
+		self.excerpts = excerpts
 		ledger = composition.services.planLedger
 		loop = AgentLoop(composition)
 	}
 
 	public func shutdown() async {
 		await monitoring.stop()
+		excerpts?.finish()
 	}
 
 	// MARK: Composition pieces
