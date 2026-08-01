@@ -45,9 +45,15 @@ public struct OperatorConsole: Sendable {
 
 	// MARK: Run
 
+	// The environment and the identifier sequences are parameters rather than reads of the process,
+	// because the evaluator asserts over both: a run composed against an empty environment is the proof
+	// that startup needs no credentials, and a scripted conversation can only cite evidence whose
+	// identifiers were decided before the run.
 	public func run(
 		arguments: [String],
 		directory: URL = URL(filePath: FileManager.default.currentDirectoryPath, directoryHint: .isDirectory),
+		environment: [String: String] = ProcessInfo.processInfo.environment,
+		identifiers: AgentIdentifiers = AgentIdentifiers(),
 		transport: @escaping ConsoleStack.TransportFactory = ConsoleStack.liveTransport
 	) async -> ExitCode {
 		guard let options = try? CLIOptions.parse(arguments, directory: directory) else {
@@ -63,8 +69,13 @@ public struct OperatorConsole: Sendable {
 
 		let notice: Console.Writer = options.isJSON ? console.error : console.output
 		let renderer: any TurnRenderer = options.isJSON ? JSONLTurnRenderer(console) : HumanTurnRenderer(console)
-		guard let stack = try? await ConsoleStack.composed(options: options, renderer: renderer, transport: transport)
-		else {
+		guard let stack = try? await ConsoleStack.composed(
+			options: options,
+			renderer: renderer,
+			environment: environment,
+			identifiers: identifiers,
+			transport: transport
+		) else {
 			console.line(Self.safeStartupError, to: console.error)
 
 			return .failed

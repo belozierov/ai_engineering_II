@@ -31,10 +31,15 @@ public struct ConsoleStack: Sendable {
 
 	// The live transport is a default rather than the only option: an offline test drives a whole turn
 	// through this same composition with a scripted one, and the eval harness may want the same seam.
+	//
+	// The identifier sequences are injected for one reason only: a scripted conversation has to name the
+	// evidence it cites before the run that issues it exists, which random identifiers make impossible.
+	// Nothing about identity comes through here — that is still the store's alone.
 	public static func composed(
 		options: CLIOptions,
 		renderer: any TurnRenderer,
 		environment: [String: String] = ProcessInfo.processInfo.environment,
+		identifiers: AgentIdentifiers = AgentIdentifiers(),
 		transport makeTransport: @escaping TransportFactory = ConsoleStack.liveTransport
 	) async throws -> ConsoleStack {
 		let catalog = try DataCatalog(root: options.data)
@@ -42,7 +47,7 @@ public struct ConsoleStack: Sendable {
 
 		let identity = try IdentityStore(root: workspace.identity).loadOrCreate()
 		let sink = CLIEventSink(renderer: renderer)
-		let services = AgentServices(identity: identity, sink: sink)
+		let services = AgentServices(identity: identity, sink: sink, identifiers: identifiers)
 
 		let sandbox = try SourceSandbox.fromManifest(root: catalog.sourceSnapshotURL, workspaceRoot: workspace.sandbox)
 		let runbooks = try RunbookIndex(

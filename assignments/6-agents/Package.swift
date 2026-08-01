@@ -99,6 +99,20 @@ let package = Package(
                 "ClaudeDomain"
             ]
         ),
+        .target(
+            name: "OpsEval",
+            dependencies: [
+                "OpsCLI",
+                "OpsAgent",
+                "OpsCore",
+                "OpsSourceTools",
+                "OpsFactMemory",
+                "OpsProcedures",
+                "OpsCompaction",
+                "OpsEvidenceGuard",
+                "ClaudeDomain"
+            ]
+        ),
         .executableTarget(
             name: "ops-cli",
             dependencies: [
@@ -123,6 +137,17 @@ let package = Package(
             ]
         ),
         .testTarget(name: "OpsCoreTests", dependencies: ["OpsCore"]),
+        .testTarget(
+            name: "OpsEvalTests",
+            dependencies: [
+                "OpsEval",
+                "OpsCLI",
+                "OpsAgent",
+                "OpsCore",
+                "OpsEvidenceGuard",
+                "ClaudeDomain"
+            ]
+        ),
         .testTarget(
             name: "OpsAgentTests",
             dependencies: [

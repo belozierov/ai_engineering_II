@@ -86,6 +86,18 @@ public struct ScriptedAdoption: Sendable {
 
 }
 
+// MARK: Sessions
+
+// One session the script handed out, as the loop opened it. The system prompt is a replacement rather
+// than a message and the hosted tools are fixed at creation, so neither ever appears in `prompts` — this
+// is where a fixture reads back what the loop actually told the model and what it gave it to reach.
+public struct ScriptedSession: Sendable {
+
+	public let systemPrompt: String
+	public let toolNames: [String]
+
+}
+
 // Deterministic offline adapter: no process, no network, one scripted turn per send. The script is
 // shared by every session the transport hands out — a compacted run continues the same conversation
 // on a derived session, and the fixture reads as one story either way.
@@ -125,10 +137,19 @@ public struct ScriptedModelTransport: ModelTransport {
 		get async { await script.adoptions }
 	}
 
+	// Every session this transport opened, in order.
+	public var sessions: [ScriptedSession] {
+		get async { await script.sessions }
+	}
+
 	// MARK: ModelTransport
 
 	public func makeSession(_ setup: ModelSessionSetup) async throws -> any ModelSession {
-		ScriptedModelSession(script: script, hostedTools: setup.hostedTools)
+		await script.record(
+			ScriptedSession(systemPrompt: setup.systemPrompt, toolNames: setup.hostedTools.map(\.name))
+		)
+
+		return ScriptedModelSession(script: script, hostedTools: setup.hostedTools)
 	}
 
 }
@@ -178,6 +199,7 @@ private actor ScriptedScript {
 
 	private(set) var sends: [RecordedSend] = []
 	private(set) var adoptions: [ScriptedAdoption] = []
+	private(set) var sessions: [ScriptedSession] = []
 
 	private var turns: ArraySlice<ScriptedTurn>
 	private var lastSend: Task<Claude.SessionResult, any Error>?
@@ -194,6 +216,10 @@ private actor ScriptedScript {
 
 	func record(_ adoption: ScriptedAdoption) {
 		adoptions.append(adoption)
+	}
+
+	func record(_ session: ScriptedSession) {
+		sessions.append(session)
 	}
 
 	// FIFO like the live session: each send awaits its predecessor, so one turn's tool calls never
