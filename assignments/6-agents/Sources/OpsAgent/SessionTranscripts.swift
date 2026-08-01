@@ -1,5 +1,4 @@
-import ClaudeSessions
-import ClaudeTranscript
+import ClaudeKit
 import Foundation
 import OpsCompaction
 import OpsCore

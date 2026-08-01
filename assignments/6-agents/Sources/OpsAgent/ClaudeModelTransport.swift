@@ -1,18 +1,10 @@
 import Foundation
-import ClaudeCLI
-import ClaudeDomain
-import ClaudeSessions
-import ClaudeTranscript
+import ClaudeKit
 
 // Live adapter: one `claude -p` send per model call, in a session configured to be hermetic — no
 // built-in tools, no context inherited from this machine, one turn per send so the loop keeps a
 // checkpoint before every model call.
 public struct ClaudeModelTransport: ModelTransport {
-
-	// Where the intent files of derived sessions live. The derived transcripts themselves have to sit
-	// in claude's own project folder to be resumable, so the store's root exists purely to make a
-	// crashed run's leftovers sweepable — and it belongs to the transport, not to claude.
-	static let derivedSessionsDirectory = ".ops-derived-sessions"
 
 	// toolSearch is the load-bearing removal: left on, MCP tools are reachable only behind a deferred
 	// lookup the model must perform first, and a one-turn session never gets that far. The rest keep
@@ -60,11 +52,7 @@ public struct ClaudeModelTransport: ModelTransport {
 		let resolved = workingDirectory.resolvingSymlinksInPath()
 		self.workingDirectory = resolved
 		factory = try CLISessionFactory(workingDirectory: resolved, toolProxy: toolProxy)
-		transcripts = SessionTranscripts(
-			projects: projects,
-			store: DerivedSessionStore(root: resolved.appending(path: Self.derivedSessionsDirectory)),
-			workingDirectory: resolved
-		)
+		transcripts = SessionTranscripts(projects: projects, store: DerivedSessionStore(), workingDirectory: resolved)
 	}
 
 	// MARK: ModelTransport

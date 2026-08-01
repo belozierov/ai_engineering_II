@@ -1,4 +1,4 @@
-import ClaudeDomain
+import ClaudeKit
 import Foundation
 
 // One model the loop can talk to: the transport that carries the call and the model that answers it, kept

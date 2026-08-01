@@ -1,5 +1,5 @@
 import Foundation
-import ClaudeDomain
+import ClaudeKit
 import OpsCompaction
 import Synchronization
 

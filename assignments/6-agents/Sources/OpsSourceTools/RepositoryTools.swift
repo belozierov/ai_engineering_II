@@ -1,4 +1,4 @@
-import ClaudeDomain
+import ClaudeKit
 import Foundation
 import JSONSchema
 

@@ -1,6 +1,5 @@
 import Foundation
-import ClaudeDomain
-import ClaudeMCP
+import ClaudeKit
 import OpsCLI
 
 // One binary, three roles: claude spawns this same executable as the MCP server for the session's hosted

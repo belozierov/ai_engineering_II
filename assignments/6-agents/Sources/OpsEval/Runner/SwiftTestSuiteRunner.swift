@@ -1,5 +1,5 @@
 import Foundation
-import ClaudeCLI
+import ClaudeKit
 
 // `swift test --filter <target>` in the package directory. The filter is the whole of the mapping: this
 // package ships one test target per assignment TODO, so a target name selects exactly the suites that

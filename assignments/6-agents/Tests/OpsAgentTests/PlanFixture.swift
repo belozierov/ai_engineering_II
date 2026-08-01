@@ -1,11 +1,10 @@
-import ClaudeDomain
 import Foundation
 import MCP
 import OpsAgent
 import OpsCore
 import Synchronization
 
-@testable import ClaudeMCP
+@testable import ClaudeKit
 
 // One turn's worth of planning wiring: the tracker that digests a plan, the sink that collects the
 // metadata-only events, the ledger the loop reads the plan back from, and the tool bound to all three.

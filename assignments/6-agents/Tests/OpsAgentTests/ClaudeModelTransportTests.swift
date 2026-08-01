@@ -1,4 +1,4 @@
-import ClaudeDomain
+import ClaudeKit
 import Foundation
 import Testing
 
@@ -60,12 +60,11 @@ struct ClaudeModelTransportTests {
 	}
 
 	@Test
-	func theSystemPromptReplacesRatherThanAppends() {
+	func theSystemPromptComesFromTheSetup() {
 		let setup = ModelSessionSetup(model: .sonnet, systemPrompt: "Ops copilot.", requestTimeout: .seconds(42))
 		let configuration = ClaudeModelTransport.configuration(for: setup)
 
 		#expect(configuration.systemPrompt == "Ops copilot.")
-		#expect(configuration.appendSystemPrompt == nil)
 	}
 
 	@Test

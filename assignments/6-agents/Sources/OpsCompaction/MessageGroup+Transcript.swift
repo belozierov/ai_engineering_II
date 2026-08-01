@@ -1,5 +1,5 @@
 import Foundation
-import ClaudeTranscript
+import ClaudeKit
 
 public extension MessageGroup {
 

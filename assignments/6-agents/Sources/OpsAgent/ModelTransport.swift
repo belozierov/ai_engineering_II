@@ -1,5 +1,5 @@
 import Foundation
-import ClaudeDomain
+import ClaudeKit
 
 // The loop's single injection point for "one model call". Two implementations exist — the live
 // `claude -p` adapter and the scripted offline one — and the summarizer speaks through its own

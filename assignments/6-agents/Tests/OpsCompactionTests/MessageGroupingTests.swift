@@ -1,5 +1,5 @@
 import Foundation
-import ClaudeTranscript
+import ClaudeKit
 import Testing
 
 @testable import OpsCompaction

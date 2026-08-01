@@ -1,5 +1,4 @@
-import ClaudeSessions
-import ClaudeTranscript
+import ClaudeKit
 import Foundation
 import OpsCompaction
 import OpsCore
@@ -96,7 +95,7 @@ struct TranscriptSpliceFixture {
 
 		transcripts = SessionTranscripts(
 			projects: ClaudeProjectsDirectory(root: projectsRoot),
-			store: DerivedSessionStore(root: root.appending(path: "derived")),
+			store: DerivedSessionStore(),
 			workingDirectory: workingDirectory
 		)
 	}

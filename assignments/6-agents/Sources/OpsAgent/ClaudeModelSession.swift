@@ -1,5 +1,4 @@
-import ClaudeCLI
-import ClaudeDomain
+import ClaudeKit
 import Foundation
 import OpsCompaction
 import OpsCore

@@ -1,4 +1,3 @@
-import ClaudeDomain
 import Darwin
 import Foundation
 import MCP
@@ -6,7 +5,7 @@ import OpsCore
 import Synchronization
 import Testing
 
-@testable import ClaudeMCP
+@testable import ClaudeKit
 @testable import OpsSourceTools
 
 enum Fixture {

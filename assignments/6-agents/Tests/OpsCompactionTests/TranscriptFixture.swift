@@ -1,5 +1,5 @@
 import Foundation
-import ClaudeTranscript
+import ClaudeKit
 
 // Hand-built JSONL lines in the shape claude writes them: typed prompts as plain string content,
 // assistant turns as block lists, tool results as user-role records, plus the repair pair and a torn

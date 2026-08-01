@@ -1,10 +1,6 @@
 // swift-tools-version: 6.3
 import PackageDescription
 
-// Vendored subset of the Claude kit — see Vendored/Claude/README.md for provenance.
-let vendoredSources = "Vendored/Claude/Sources"
-let vendoredTests = "Vendored/Claude/Tests"
-
 let package = Package(
     name: "ops-copilot",
     platforms: [.macOS(.v26)],
@@ -15,39 +11,12 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "ClaudeDomain",
-            dependencies: [.product(name: "JSONSchema", package: "JSONSchema")],
-            path: "\(vendoredSources)/ClaudeDomain"
-        ),
-        .target(
-            name: "ClaudeInvocation",
-            dependencies: ["ClaudeDomain"],
-            path: "\(vendoredSources)/ClaudeInvocation"
-        ),
-        .target(
-            name: "ClaudeMCP",
+            name: "ClaudeKit",
             dependencies: [
-                "ClaudeDomain",
+                .product(name: "JSONSchema", package: "JSONSchema"),
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "MCP", package: "swift-sdk")
-            ],
-            path: "\(vendoredSources)/ClaudeMCP"
-        ),
-        .target(
-            name: "ClaudeCLI",
-            dependencies: [
-                "ClaudeDomain",
-                "ClaudeInvocation",
-                "ClaudeMCP",
-                .product(name: "Logging", package: "swift-log")
-            ],
-            path: "\(vendoredSources)/ClaudeCLI"
-        ),
-        .target(name: "ClaudeTranscript", path: "\(vendoredSources)/ClaudeTranscript"),
-        .target(
-            name: "ClaudeSessions",
-            dependencies: ["ClaudeTranscript"],
-            path: "\(vendoredSources)/ClaudeSessions"
+            ]
         ),
         .target(name: "OpsCore"),
         .target(
@@ -55,21 +24,21 @@ let package = Package(
             dependencies: [
                 "OpsCore",
                 "OpsEvidenceGuard",
-                "ClaudeDomain",
+                "ClaudeKit",
                 .product(name: "JSONSchema", package: "JSONSchema")
             ]
         ),
-        .target(name: "OpsFactMemory", dependencies: ["OpsCore", "OpsEvidenceGuard", "ClaudeDomain"]),
+        .target(name: "OpsFactMemory", dependencies: ["OpsCore", "OpsEvidenceGuard", "ClaudeKit"]),
         .target(
             name: "OpsProcedures",
             dependencies: [
                 "OpsCore",
                 "OpsEvidenceGuard",
-                "ClaudeDomain",
+                "ClaudeKit",
                 .product(name: "JSONSchema", package: "JSONSchema")
             ]
         ),
-        .target(name: "OpsCompaction", dependencies: ["OpsCore", "ClaudeTranscript"]),
+        .target(name: "OpsCompaction", dependencies: ["OpsCore", "ClaudeKit"]),
         .target(name: "OpsEvidenceGuard", dependencies: ["OpsCore"]),
         .target(
             name: "OpsAgent",
@@ -80,11 +49,7 @@ let package = Package(
                 "OpsProcedures",
                 "OpsCompaction",
                 "OpsEvidenceGuard",
-                "ClaudeDomain",
-                "ClaudeMCP",
-                "ClaudeCLI",
-                "ClaudeTranscript",
-                "ClaudeSessions",
+                "ClaudeKit",
                 .product(name: "JSONSchema", package: "JSONSchema")
             ]
         ),
@@ -96,7 +61,7 @@ let package = Package(
                 "OpsSourceTools",
                 "OpsFactMemory",
                 "OpsProcedures",
-                "ClaudeDomain"
+                "ClaudeKit"
             ]
         ),
         .target(
@@ -110,8 +75,7 @@ let package = Package(
                 "OpsProcedures",
                 "OpsCompaction",
                 "OpsEvidenceGuard",
-                "ClaudeDomain",
-                "ClaudeCLI"
+                "ClaudeKit"
             ]
         ),
         .executableTarget(
@@ -121,21 +85,16 @@ let package = Package(
                 "OpsAgent",
                 "OpsCore",
                 "OpsSourceTools",
-                "ClaudeDomain",
-                "ClaudeMCP"
+                "ClaudeKit"
             ]
         ),
         .executableTarget(name: "ops-eval", dependencies: ["OpsEval"]),
-        .executableTarget(
-            name: "ops-spike",
+        .testTarget(
+            name: "ClaudeKitTests",
             dependencies: [
-                "ClaudeDomain",
-                "ClaudeInvocation",
-                "ClaudeMCP",
-                "ClaudeCLI",
-                "ClaudeSessions",
-                "ClaudeTranscript",
-                .product(name: "JSONSchema", package: "JSONSchema")
+                "ClaudeKit",
+                .product(name: "JSONSchema", package: "JSONSchema"),
+                .product(name: "MCP", package: "swift-sdk")
             ]
         ),
         .testTarget(name: "OpsCoreTests", dependencies: ["OpsCore"]),
@@ -147,7 +106,7 @@ let package = Package(
                 "OpsAgent",
                 "OpsCore",
                 "OpsEvidenceGuard",
-                "ClaudeDomain"
+                "ClaudeKit"
             ]
         ),
         .testTarget(
@@ -160,8 +119,7 @@ let package = Package(
                 "OpsSourceTools",
                 "OpsFactMemory",
                 "OpsProcedures",
-                "ClaudeDomain",
-                "ClaudeMCP",
+                "ClaudeKit",
                 .product(name: "JSONSchema", package: "JSONSchema"),
                 .product(name: "MCP", package: "swift-sdk")
             ]
@@ -174,21 +132,20 @@ let package = Package(
                 "OpsCore",
                 "OpsEvidenceGuard",
                 "OpsSourceTools",
-                "ClaudeDomain"
+                "ClaudeKit"
             ]
         ),
         .testTarget(name: "OpsEvidenceGuardTests", dependencies: ["OpsEvidenceGuard", "OpsCore"]),
         .testTarget(
             name: "OpsCompactionTests",
-            dependencies: ["OpsCompaction", "OpsCore", "ClaudeTranscript"]
+            dependencies: ["OpsCompaction", "OpsCore", "ClaudeKit"]
         ),
         .testTarget(
             name: "OpsSourceToolsTests",
             dependencies: [
                 "OpsSourceTools",
                 "OpsCore",
-                "ClaudeDomain",
-                "ClaudeMCP",
+                "ClaudeKit",
                 .product(name: "JSONSchema", package: "JSONSchema"),
                 .product(name: "MCP", package: "swift-sdk")
             ]
@@ -200,53 +157,9 @@ let package = Package(
                 "OpsProcedures",
                 "OpsCore",
                 "OpsEvidenceGuard",
-                "ClaudeDomain",
+                "ClaudeKit",
                 .product(name: "JSONSchema", package: "JSONSchema")
             ]
-        ),
-        .testTarget(
-            name: "ClaudeMCPTests",
-            dependencies: [
-                "ClaudeMCP",
-                "ClaudeDomain",
-                .product(name: "MCP", package: "swift-sdk")
-            ],
-            path: "\(vendoredTests)/ClaudeMCPTests"
-        ),
-        .testTarget(
-            name: "ClaudeInvocationTests",
-            dependencies: [
-                "ClaudeInvocation",
-                "ClaudeDomain",
-                .product(name: "JSONSchema", package: "JSONSchema")
-            ],
-            path: "\(vendoredTests)/ClaudeInvocationTests"
-        ),
-        .testTarget(
-            name: "ClaudeTranscriptTests",
-            dependencies: [
-                "ClaudeTranscript",
-                "ClaudeDomain",
-                "ClaudeCLI"
-            ],
-            path: "\(vendoredTests)/ClaudeTranscriptTests"
-        ),
-        .testTarget(
-            name: "ClaudeSessionsTests",
-            dependencies: [
-                "ClaudeSessions",
-                "ClaudeTranscript"
-            ],
-            path: "\(vendoredTests)/ClaudeSessionsTests"
-        ),
-        .testTarget(
-            name: "ClaudeCLITests",
-            dependencies: [
-                "ClaudeCLI",
-                "ClaudeDomain",
-                .product(name: "JSONSchema", package: "JSONSchema")
-            ],
-            path: "\(vendoredTests)/ClaudeCLITests"
         )
     ],
     swiftLanguageModes: [.v6]
