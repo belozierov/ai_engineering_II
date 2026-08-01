@@ -14,11 +14,12 @@ struct MonitoringToolTests {
 	func toolReadsAValidatedResourceAndRegistersEvidenceAndEvent() async throws {
 		try await Harness.withTool { tool, harness in
 			let reading = try await tool.read(MonitoringTool.Arguments(resource: .health))
+			let payload = try JSONDecoder().decode(SourceToolPayload.self, from: Data(reading.visible.utf8))
 
-			#expect(reading.visible.contains("\"status\":\"degraded\""))
+			#expect(payload.content.contains("\"status\":\"degraded\""))
 			#expect(reading.artifact.sourceFamily == .monitoring)
 			#expect(reading.artifact.sourceID == "monitoring:health")
-			#expect(reading.artifact.contentSHA256 == SourceResult.contentDigest(of: reading.visible))
+			#expect(reading.artifact.contentSHA256 == SourceResult.contentDigest(of: payload.content))
 			#expect(reading.evidence.status == .issued)
 			#expect(reading.evidence.trust == .untrustedData)
 			#expect(reading.evidence.provenance.contentSHA256 == reading.artifact.contentSHA256)
@@ -50,7 +51,11 @@ struct MonitoringToolTests {
 
 			#expect(reading.artifact.status == .blocked)
 			#expect(reading.artifact.content.isEmpty)
-			#expect(reading.visible == #"{"source_id":"monitoring:deploys","status":"blocked"}"#)
+			#expect(reading.visible == #"{"source_id":"monitoring:deploys","status":"blocked","untrusted_data":true}"#)
+			// No handle for evidence a refusal minted failed: the model cannot spend a citation on a read the
+			// answer policy would refuse to ground.
+			#expect(!reading.visible.contains(reading.evidence.evidenceID))
+			#expect(!reading.visible.contains("[evidence:"))
 			#expect(reading.evidence.status == .failed)
 			#expect(reading.evidence.allowedResources.isEmpty)
 
@@ -75,22 +80,62 @@ struct MonitoringToolTests {
 	}
 
 	@Test
-	func hostedToolCallReturnsOnlyTheVisibleContent() async throws {
+	func hostedToolCallReturnsTheVisiblePayloadWithTheEvidenceThatCitesIt() async throws {
 		try await Harness.withTool { tool, _ in
 			let arguments = MonitoringTool.Arguments(resource: .errorRate, windowMinutes: 30)
 			let reading = try await tool.read(arguments)
 			let visible = try await tool.call(arguments)
+			let read = try JSONDecoder().decode(SourceToolPayload.self, from: Data(reading.visible.utf8))
+			let called = try JSONDecoder().decode(SourceToolPayload.self, from: Data(visible.utf8))
 
-			#expect(visible.contains("\"error_rate\":0.071"))
-			#expect(visible.contains("\"window_minutes\":30"))
 			#expect(tool.name == "get_monitoring")
+			#expect(read.content == reading.artifact.content)
+			#expect(read.content.contains("\"error_rate\":0.071"))
+			#expect(read.content.contains("\"window_minutes\":30"))
 
-			// What the host keeps and what the model sees are the same read; `call` is the visible half of it and
-			// nothing else — not the evidence identifier the host holds, and not a citation for it.
-			#expect(visible == reading.visible)
-			#expect(visible == reading.artifact.content)
-			#expect(!visible.contains(reading.evidence.evidenceID))
-			#expect(!visible.contains("[evidence:"))
+			// The reason this tool has a visible channel at all: a monitoring read the model cannot name is a
+			// read no answer can be grounded in, so the identifier the host issued travels with the content.
+			#expect(read.evidenceID == reading.evidence.evidenceID)
+			#expect(read.citation == "[evidence:\(reading.evidence.evidenceID)]")
+
+			// `call` is the visible half of the same work, so it agrees on everything the read returned except
+			// the record — a second read is a second issuance, and each payload carries its own handle.
+			#expect(called.content == read.content)
+			#expect(called.sourceID == read.sourceID)
+			#expect(called.evidenceID != read.evidenceID)
+		}
+	}
+
+	@Test
+	func theModelVisibleTextIsSortedKeyJSONWithTheSameContractFieldsAsEverySource() async throws {
+		try await Harness.withTool { tool, _ in
+			let reading = try await tool.read(MonitoringTool.Arguments(resource: .health))
+			let object = try #require(
+				try JSONSerialization.jsonObject(with: Data(reading.visible.utf8)) as? [String: Any]
+			)
+
+			#expect(object.keys.sorted() == [
+				"citation",
+				"content",
+				"evidence_id",
+				"quarantined",
+				"source_family",
+				"source_id",
+				"status",
+				"truncated",
+				"untrusted_data"
+			])
+
+			let payload = try JSONDecoder().decode(SourceToolPayload.self, from: Data(reading.visible.utf8))
+
+			#expect(payload.sourceFamily == "monitoring")
+			#expect(payload.sourceID == "monitoring:health")
+			#expect(payload.status == "ok")
+			#expect(payload.untrustedData)
+			#expect(!payload.quarantined)
+			#expect(!payload.truncated)
+			// Sorted keys and unescaped slashes make the tool text byte-stable across identical reads.
+			#expect(reading.visible.hasPrefix(#"{"citation":"[evidence:"#))
 		}
 	}
 

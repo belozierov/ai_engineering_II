@@ -73,6 +73,27 @@ struct FactsTool: Claude.HostedTool {
 
 }
 
+// An object payload with no output schema — the majority shape, and the one whose "there is no
+// structured channel here" answer has to stay off the wire rather than travel as a JSON null.
+struct SchemalessOutputTool: Claude.HostedTool {
+
+	struct Output: Encodable {
+
+		let value: String
+
+	}
+
+	typealias Arguments = EchoTool.Arguments
+
+	let name = "schemaless"
+	let description = "Returns an object without declaring an output schema"
+
+	func call(_ arguments: Arguments) async throws -> Output {
+		Output(value: arguments.message)
+	}
+
+}
+
 struct FailingTool: Claude.HostedTool {
 
 	enum Errors: Error {

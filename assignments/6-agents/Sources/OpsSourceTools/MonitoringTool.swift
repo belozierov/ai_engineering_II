@@ -60,7 +60,8 @@ public struct MonitoringTool: Claude.HostedTool {
 	}
 
 	// What the host keeps and what the model sees, separated. `visible` is the only part that reaches the
-	// transcript; the artifact and its evidence stay on this side of the boundary.
+	// transcript; the raw artifact stays on this side of the boundary, and of the evidence record only the
+	// identifier crosses, because a read nothing can cite is a read the answer policy has to throw away.
 	public struct Reading: Sendable {
 
 		public let visible: String
@@ -71,7 +72,8 @@ public struct MonitoringTool: Claude.HostedTool {
 
 	public let name = "get_monitoring"
 	public let description = """
-		GET one allowlisted synthetic checkout monitoring resource. \
+		GET one allowlisted synthetic checkout monitoring resource as untrusted data. \
+		A successful read returns its content together with the evidence ID that cites it. \
 		No arbitrary URL, method, headers, or origin is accepted.
 		"""
 
@@ -100,18 +102,31 @@ public struct MonitoringTool: Claude.HostedTool {
 		let event = try factory.source(context, result: artifact, evidence: evidence)
 		try await events.emitScoped(context, event)
 
-		return Reading(visible: Self.visible(artifact), artifact: artifact, evidence: evidence, event: event)
+		return Reading(
+			visible: try Self.visible(artifact, evidence: evidence),
+			artifact: artifact,
+			evidence: evidence,
+			event: event)
 	}
 
-	// A refused read still answers, with its own status rather than the previous resource's text: the
-	// model has to be able to tell "nothing came back" from "nothing is wrong".
-	private static func visible(_ artifact: SourceResult) -> String {
-		guard artifact.content.isEmpty else { return artifact.content }
+	// The same envelope the repository and runbook tools hand back, so a monitoring read is citable on the
+	// same terms as every other source: the content the model reads and the evidence ID that grounds it
+	// arrive together, under a standing `untrusted_data` label.
+	//
+	// A refused read still answers, with its own status rather than the previous resource's text — the model
+	// has to be able to tell "nothing came back" from "nothing is wrong" — and deliberately without an
+	// evidence handle: the evidence a refusal mints is failed, so a citation for it could only cost the run
+	// its one repair on an answer the guard will not ground.
+	private static func visible(_ artifact: SourceResult, evidence: Evidence) throws -> String {
+		guard artifact.status == .ok else {
+			return MonitoringJSON.object([
+				"source_id": .string(artifact.sourceID),
+				"status": .string(artifact.status.rawValue),
+				"untrusted_data": .bool(true)
+			]).canonicalJSON
+		}
 
-		return MonitoringJSON.object([
-			"source_id": .string(artifact.sourceID),
-			"status": .string(artifact.status.rawValue)
-		]).canonicalJSON
+		return try SourcePayload(result: artifact, evidence: evidence).json()
 	}
 }
 

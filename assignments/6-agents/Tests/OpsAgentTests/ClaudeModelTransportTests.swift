@@ -76,15 +76,16 @@ struct ClaudeModelTransportTests {
 		#expect(configuration.requestTimeout == .seconds(42))
 	}
 
-	// claude resolves the cwd before deriving its ~/.claude/projects folder name, so the transport
-	// must hand the factory the resolved path — an unresolved one loses every transcript.
+	// claude resolves the cwd to a real path before deriving its ~/.claude/projects folder name, so the
+	// transport must hand the factory that same path — a symlinked one, or one with its `/private`
+	// prefix hidden, loses every transcript and with it compaction's history.
 	@Test(.enabled(if: TransportFixture.isClaudeExecutableAvailable))
-	func theWorkingDirectoryIsSymlinkResolved() throws {
+	func theWorkingDirectoryIsResolvedToItsRealPath() throws {
 		try TransportFixture.withSymlinkedDirectory { link, target in
 			let proxy = Claude.ToolProxyCommand(executable: URL(filePath: "/usr/bin/true"))
 			let transport = try ClaudeModelTransport(workingDirectory: link, toolProxy: proxy)
 
-			#expect(transport.workingDirectory == target.resolvingSymlinksInPath())
+			#expect(transport.workingDirectory.path(percentEncoded: false) == TransportFixture.realPath(of: target))
 			#expect(transport.workingDirectory != link)
 		}
 	}

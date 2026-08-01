@@ -1,8 +1,8 @@
-import ClaudeKit
 import Foundation
 import OpsCore
 import Testing
 
+@testable import ClaudeKit
 @testable import OpsSourceTools
 
 @Suite("Runbook search tool")
@@ -189,6 +189,22 @@ struct RunbookSearchToolTests {
 	func resultLimitIsBoundedAtConstruction() throws {
 		#expect(throws: ContractError.self) { try harness(maximumResults: 0) }
 		#expect(throws: ContractError.self) { try harness(maximumResults: 11) }
+	}
+
+	// The payload is model-visible text and nothing else: this tool declares no output schema, so a
+	// structured channel of any kind — a JSON null included — is a result the MCP client refuses before
+	// the model ever reads it. Every runbook search of a live run died exactly here.
+	@Test
+	func resultsTravelWithoutAStructuredChannel() async throws {
+		let harness = try harness()
+		try await harness.evidence.beginTurn(harness.context)
+
+		let arguments = Data(#"{"query":"checkout 5xx after deploy rollback"}"#.utf8)
+		let result = try await harness.tool.call(rawArguments: arguments)
+
+		#expect(harness.tool.outputSchema == nil)
+		#expect(result.structured == nil)
+		#expect(result.text.contains(#""status":"ok""#))
 	}
 
 	// Evidence issuance is turn-scoped: without an open turn the tool cannot mint a citation at all.

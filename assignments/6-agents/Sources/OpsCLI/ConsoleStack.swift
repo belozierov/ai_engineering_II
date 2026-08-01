@@ -165,7 +165,7 @@ private struct Workspace {
 
 	init(root: URL) throws {
 		try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
-		let resolved = Self.realPath(of: root)
+		let resolved = root.resolvingRealPath()
 
 		identity = resolved.appending(path: "identity", directoryHint: .isDirectory)
 		// Disjoint from the snapshot by construction: the sandbox refuses a workspace that overlaps the
@@ -180,14 +180,5 @@ private struct Workspace {
 		try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
 
 		return url
-	}
-
-	private static func realPath(of url: URL) -> URL {
-		url.withUnsafeFileSystemRepresentation { path in
-			guard let path, let resolved = realpath(path, nil) else { return url }
-			defer { free(resolved) }
-
-			return URL(filePath: String(cString: resolved), directoryHint: .isDirectory)
-		}
 	}
 }

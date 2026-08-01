@@ -47,9 +47,11 @@ public struct ClaudeModelTransport: ModelTransport {
 		toolProxy: Claude.ToolProxyCommand,
 		projects: ClaudeProjectsDirectory = ClaudeProjectsDirectory()
 	) throws {
-		// claude resolves the cwd before deriving its ~/.claude/projects folder name, so anything
-		// locating a transcript by working directory misses unless the path is resolved here first.
-		let resolved = workingDirectory.resolvingSymlinksInPath()
+		// claude resolves the cwd to a real path before deriving its ~/.claude/projects folder name, so
+		// anything locating a transcript by working directory misses unless the path is resolved the same
+		// way here — `resolvingSymlinksInPath` would hide the `/private` prefix every temporary workspace
+		// really has, and compaction would find no history at all.
+		let resolved = workingDirectory.resolvingRealPath()
 		self.workingDirectory = resolved
 		factory = try CLISessionFactory(workingDirectory: resolved, toolProxy: toolProxy)
 		transcripts = SessionTranscripts(projects: projects, store: DerivedSessionStore(), workingDirectory: resolved)

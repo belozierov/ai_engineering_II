@@ -71,7 +71,10 @@ struct SessionTranscriptsTests {
 // MARK: Fixture
 
 // A projects root with one project folder holding one donor transcript, laid out the way claude lays
-// it out: the folder name is the working directory's path with every `/` and `.` turned into `-`.
+// it out: the folder name is the REAL path of the working directory with every `/` and `.` turned into
+// `-`. Naming it after the path the temporary directory hands out instead is the whole live failure —
+// every macOS temporary workspace hides a `/private` prefix that claude puts back, and a session that
+// looks for its transcript under the hidden form finds nothing.
 struct TranscriptSpliceFixture {
 
 	let root: URL
@@ -83,11 +86,12 @@ struct TranscriptSpliceFixture {
 	init() throws {
 		root = URL(filePath: NSTemporaryDirectory()).appending(path: "ops-splice-\(UUID().uuidString)")
 		workingDirectory = root.appending(path: "session")
+		try FileManager.default.createDirectory(at: workingDirectory, withIntermediateDirectories: true)
+
 		let projectsRoot = root.appending(path: "projects")
-		let path = workingDirectory.path(percentEncoded: false)
+		let path = TransportFixture.realPath(of: workingDirectory)
 		let folder = projectsRoot.appending(path: String(path.map { $0 == "/" || $0 == "." ? "-" : $0 }))
 		try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-		try FileManager.default.createDirectory(at: workingDirectory, withIntermediateDirectories: true)
 
 		donorID = UUID()
 		donorURL = folder.appending(path: "\(donorID.canonical).jsonl")

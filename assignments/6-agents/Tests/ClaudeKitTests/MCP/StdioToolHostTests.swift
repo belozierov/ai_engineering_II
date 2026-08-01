@@ -40,8 +40,17 @@ struct StdioToolHostTests {
 	private func withHost<T>(
 		tools: [any Claude.HostedTool],
 		body: (Client) async throws -> T) async throws -> T {
-		let host = try StdioToolHost(name: "test", version: "1.0.0", tools: tools)
 		let (clientTransport, serverTransport) = await InMemoryTransport.createConnectedPair()
+
+		return try await withHost(tools: tools, client: clientTransport, server: serverTransport, body: body)
+	}
+
+	private func withHost<T>(
+		tools: [any Claude.HostedTool],
+		client clientTransport: any Transport,
+		server serverTransport: any Transport,
+		body: (Client) async throws -> T) async throws -> T {
+		let host = try StdioToolHost(name: "test", version: "1.0.0", tools: tools)
 		let server = Task { try await host.run(transport: serverTransport) }
 
 		let client = Client(name: "StdioToolHostTests", version: "1.0.0")
@@ -122,6 +131,39 @@ struct StdioToolHostTests {
 			}
 			#expect(text.contains("fact-one"))
 		}
+	}
+
+	// `Value` is ExpressibleByNilLiteral, so "no structured content" written as a bare `nil` in a
+	// Value-typed position becomes `.null` and ships `"structuredContent": null` — a field the client
+	// validates as a record and refuses outright, turning every call of an object-output tool into a
+	// malformed result the model can only read as a broken tool.
+	@Test
+	func outputWithoutSchemaKeepsStructuredContentOffTheWire() async throws {
+		let (clientTransport, serverTransport) = await InMemoryTransport.createConnectedPair()
+		let recorder = RecordingTransport(serverTransport)
+
+		try await withHost(tools: [SchemalessOutputTool()], client: clientTransport, server: recorder) { client in
+			let (content, isError) = try await client.callTool(name: "schemaless", arguments: ["message": "hi"])
+
+			#expect(isError == false)
+			#expect(content == [text(#"{"value":"hi"}"#)])
+		}
+
+		let frame = try #require(await recorder.frames.first { $0.contains(#""content":["#) })
+		#expect(!frame.contains("structuredContent"))
+	}
+
+	@Test
+	func outputWithSchemaCarriesStructuredContentOnTheWire() async throws {
+		let (clientTransport, serverTransport) = await InMemoryTransport.createConnectedPair()
+		let recorder = RecordingTransport(serverTransport)
+
+		try await withHost(tools: [FactsTool()], client: clientTransport, server: recorder) { client in
+			_ = try await client.callTool(name: "facts", arguments: ["topic": "swift"])
+		}
+
+		let frame = try #require(await recorder.frames.first { $0.contains("structuredContent") })
+		#expect(frame.contains(#""structuredContent":{"#))
 	}
 
 	@Test

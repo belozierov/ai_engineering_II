@@ -1,3 +1,4 @@
+import ClaudeKit
 import Foundation
 import OpsAgent
 import OpsCore
@@ -141,7 +142,7 @@ private struct ComponentWorkspace {
 
 	init(root: URL) throws {
 		try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
-		let resolved = Self.realPath(of: root)
+		let resolved = root.resolvingRealPath()
 
 		identity = resolved.appending(path: "identity", directoryHint: .isDirectory)
 		procedures = resolved.appending(path: "procedures", directoryHint: .isDirectory)
@@ -149,14 +150,5 @@ private struct ComponentWorkspace {
 		let sandbox = resolved.appending(path: "sandbox", directoryHint: .isDirectory)
 		try FileManager.default.createDirectory(at: sandbox, withIntermediateDirectories: true)
 		self.sandbox = sandbox
-	}
-
-	private static func realPath(of url: URL) -> URL {
-		url.withUnsafeFileSystemRepresentation { path in
-			guard let path, let resolved = realpath(path, nil) else { return url }
-			defer { free(resolved) }
-
-			return URL(filePath: String(cString: resolved), directoryHint: .isDirectory)
-		}
 	}
 }

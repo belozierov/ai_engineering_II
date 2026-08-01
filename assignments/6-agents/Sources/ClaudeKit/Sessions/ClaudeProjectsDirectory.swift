@@ -40,8 +40,13 @@ public struct ClaudeProjectsDirectory: Sendable {
 	// Forward-encodes an absolute path into a project folder name by replacing every `/` and `.`
 	// with `-`. The mapping is lossy (both separators collapse to the same character), so it is
 	// one-way only. Root `/` maps to `-`.
+	//
+	// The directory is resolved to its real path last, because that is what claude encodes: a caller
+	// holding `/tmp/w` or a symlink to the workspace names the same folder as one holding
+	// `/private/tmp/w`, instead of one claude never wrote to. Standardizing afterwards would put the
+	// hidden `/private` prefix straight back.
 	func folderName(for directory: URL) -> String {
-		var path = directory.standardizedFileURL.path(percentEncoded: false)
+		var path = directory.standardizedFileURL.resolvingRealPath().path(percentEncoded: false)
 		if path.count > 1, path.hasSuffix("/") { path.removeLast() }
 		return String(path.map { $0 == "/" || $0 == "." ? "-" : $0 })
 	}

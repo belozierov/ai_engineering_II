@@ -150,7 +150,9 @@ let package = Package(
                 .product(name: "MCP", package: "swift-sdk")
             ]
         ),
-        .testTarget(name: "OpsFactMemoryTests", dependencies: ["OpsFactMemory", "OpsEvidenceGuard", "OpsCore"]),
+        .testTarget(
+            name: "OpsFactMemoryTests",
+            dependencies: ["OpsFactMemory", "OpsEvidenceGuard", "OpsCore", "ClaudeKit"]),
         .testTarget(
             name: "OpsProceduresTests",
             dependencies: [

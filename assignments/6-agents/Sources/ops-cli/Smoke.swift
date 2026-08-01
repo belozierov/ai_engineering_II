@@ -37,7 +37,7 @@ struct Smoke {
 	init() {
 		// The identity store refuses a root reached through a symlink and /var is one on macOS, while
 		// `resolvingSymlinksInPath` hides the /private prefix instead of producing the real path.
-		base = Self.realPath(of: FileManager.default.temporaryDirectory)
+		base = FileManager.default.temporaryDirectory.resolvingRealPath()
 			.appending(path: "ops-cli-smoke-\(UUID().uuidString)", directoryHint: .isDirectory)
 	}
 
@@ -113,15 +113,6 @@ struct Smoke {
 		try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
 
 		return url
-	}
-
-	private static func realPath(of url: URL) -> URL {
-		url.withUnsafeFileSystemRepresentation { path in
-			guard let path, let resolved = realpath(path, nil) else { return url }
-			defer { free(resolved) }
-
-			return URL(filePath: String(cString: resolved), directoryHint: .isDirectory)
-		}
 	}
 
 	// MARK: Reporting

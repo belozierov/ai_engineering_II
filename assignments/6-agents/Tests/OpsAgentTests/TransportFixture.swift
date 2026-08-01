@@ -31,6 +31,17 @@ enum TransportFixture {
 		try body(link, target)
 	}
 
+	// The path claude derives its projects folder from, taken through realpath rather than through the
+	// transport under test.
+	static func realPath(of directory: URL) -> String {
+		directory.withUnsafeFileSystemRepresentation { path -> String in
+			guard let path, let resolved = realpath(path, nil) else { return "" }
+			defer { free(resolved) }
+
+			return String(cString: resolved)
+		}
+	}
+
 }
 
 // MARK: Incident tool

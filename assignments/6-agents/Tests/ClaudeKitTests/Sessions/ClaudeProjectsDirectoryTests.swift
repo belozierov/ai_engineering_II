@@ -96,7 +96,42 @@ struct ClaudeProjectsDirectoryTests {
 		#expect(directory.transcriptURL(for: subdirectorySession, in: URL(filePath: projectDirectory)) == nil)
 	}
 
+	// The lookup has to survive a working directory that is not already a real path, because none of
+	// them are: every macOS temporary workspace is reached through a symlink and hides a `/private`
+	// prefix claude puts back. A folder name taken from the unresolved path names a directory claude
+	// never wrote to, and the session's own transcript comes back missing.
+	@Test
+	func findsTranscriptsThroughAnUnresolvedWorkingDirectory() throws {
+		let root = try TemporaryDirectory()
+		let workspace = root.url.appending(path: "workspace")
+		let link = root.url.appending(path: "link")
+		try FileManager.default.createDirectory(at: workspace, withIntermediateDirectories: true)
+		try FileManager.default.createSymbolicLink(at: link, withDestinationURL: workspace)
+
+		let projects = root.url.appending(path: "projects")
+		let directory = ClaudeProjectsDirectory(root: projects)
+		let folder = projects.appending(path: Self.claudeFolderName(of: workspace))
+		try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+		try Data("{}".utf8).write(to: folder.appending(path: "\(Self.sessionID.uuidString.lowercased()).jsonl"))
+
+		#expect(directory.transcriptURL(for: Self.sessionID, in: workspace) != nil)
+		#expect(directory.transcriptURL(for: Self.sessionID, in: link) != nil)
+	}
+
 	// MARK: Helpers
+
+	// What claude itself would name the folder, derived through realpath rather than through the type
+	// under test.
+	private static func claudeFolderName(of directory: URL) -> String {
+		let path = directory.withUnsafeFileSystemRepresentation { path -> String in
+			guard let path, let resolved = realpath(path, nil) else { return "" }
+			defer { free(resolved) }
+
+			return String(cString: resolved)
+		}
+
+		return String(path.map { $0 == "/" || $0 == "." ? "-" : $0 })
+	}
 
 	private func makeSession(_ id: UUID, for directory: String, in projects: ClaudeProjectsDirectory, under root: URL) throws {
 		let folder = root.appending(path: projects.folderName(for: URL(filePath: directory)))

@@ -3,6 +3,7 @@ import OpsCore
 import OpsEvidenceGuard
 import Testing
 
+@testable import ClaudeKit
 @testable import OpsFactMemory
 
 @Suite("Fact memory tools")
@@ -62,6 +63,31 @@ struct FactMemoryToolTests {
 		#expect(save.required == ["text", "evidence_ids"])
 		#expect(Set(recall.properties.keys) == ["query", "limit"])
 		#expect(recall.required == ["query"])
+	}
+
+	// Both memory tools answer with an object and declare no output schema, which is the shape that has
+	// to leave the structured channel off the wire entirely: a JSON null there is a result the MCP
+	// client refuses before the model reads a word of it.
+	@Test
+	func memoryToolResultsTravelWithoutAStructuredChannel() async throws {
+		let context = try Fixture.context()
+		let harness = try Harness()
+		try await harness.startTurn(context)
+		let evidence = try await harness.issuedEvidence(context)
+		let save = SaveFactTool(service: harness.service, context: context)
+		let recall = RecallFactsTool(service: harness.service, context: context)
+
+		let saved = try await save.call(
+			rawArguments: Data(#"{"text": "\#(Fixture.factText)", "evidence_ids": ["\#(evidence.evidenceID)"]}"#.utf8)
+		)
+		let recalled = try await recall.call(rawArguments: Data(#"{"query": "\#(Fixture.factQuery)"}"#.utf8))
+
+		#expect(save.outputSchema == nil)
+		#expect(recall.outputSchema == nil)
+		#expect(saved.structured == nil)
+		#expect(recalled.structured == nil)
+		#expect(saved.text.contains(#""status":"ok""#))
+		#expect(recalled.text.contains(#""count":1"#))
 	}
 
 	// MARK: Recall

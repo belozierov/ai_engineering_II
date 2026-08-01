@@ -7,7 +7,11 @@ Nothing here re-implements a check. The shim only reconstructs the evaluator's o
 
 from __future__ import annotations
 
-from swift_shim.judge import UnavailableJudgeTransport, judge_transport_from_environment
+from swift_shim.judge import (
+    ClaudeJudgeTransport,
+    UnavailableJudgeTransport,
+    judge_transport_from_environment,
+)
 from swift_shim.protocol import (
     build_live_outcome,
     parse_excerpt_lines,
@@ -19,6 +23,7 @@ from swift_shim.report import merge_live_rows, parse_core_report, render_report
 from swift_shim.transport import SwiftCLIAgentTransport
 
 __all__ = [
+    "ClaudeJudgeTransport",
     "QuarantineIndex",
     "SwiftCLIAgentTransport",
     "UnavailableJudgeTransport",
