@@ -1,0 +1,231 @@
+import ClaudeKit
+import Foundation
+import JSONSchema
+import Synchronization
+import Testing
+
+import OpsCore
+import OpsSourceTools
+
+@Suite("Monitoring tool")
+struct MonitoringToolTests {
+
+	@Test
+	func toolReadsAValidatedResourceAndRegistersEvidenceAndEvent() async throws {
+		try await Harness.withTool { tool, harness in
+			let reading = try await tool.read(MonitoringTool.Arguments(resource: .health))
+			let payload = try JSONDecoder().decode(SourceToolPayload.self, from: Data(reading.visible.utf8))
+
+			#expect(payload.content.contains("\"status\":\"degraded\""))
+			#expect(reading.artifact.sourceFamily == .monitoring)
+			#expect(reading.artifact.sourceID == "monitoring:health")
+			#expect(reading.artifact.contentSHA256 == SourceResult.contentDigest(of: payload.content))
+			#expect(reading.evidence.status == .issued)
+			#expect(reading.evidence.trust == .untrustedData)
+			#expect(reading.evidence.provenance.contentSHA256 == reading.artifact.contentSHA256)
+			#expect(await harness.registry.resolve(harness.context, evidenceID: reading.evidence.evidenceID).evidence != nil)
+
+			let events = try await harness.events.events(for: harness.context)
+			#expect(events.map(\.eventType) == [.source])
+			#expect(events.first?.status == .completed)
+			#expect(events.first?.sourceFamily == .monitoring)
+			#expect(events.first?.artifactID == reading.evidence.evidenceID)
+		}
+	}
+
+	@Test
+	func toolCarriesTheDeadEndFollowUpsSoAPlanCanBeRevised() async throws {
+		try await Harness.withTool { tool, _ in
+			let reading = try await tool.read(MonitoringTool.Arguments(resource: .deadEnd))
+
+			#expect(reading.visible.contains("no_matching_timeseries"))
+			#expect(reading.evidence.allowedResources.contains("repository:logs/checkout.log"))
+			#expect(reading.evidence.allowedResources.contains("runbook:pm-checkout-timeout-2026-06"))
+		}
+	}
+
+	@Test
+	func aRefusedReadStillAnswersWithMetadataOnly() async throws {
+		try await Harness.withTool { tool, harness in
+			let reading = try await tool.read(MonitoringTool.Arguments(resource: .deploys, limit: 11))
+
+			#expect(reading.artifact.status == .blocked)
+			#expect(reading.artifact.content.isEmpty)
+			#expect(reading.visible == #"{"source_id":"monitoring:deploys","status":"blocked","untrusted_data":true}"#)
+			// No handle for evidence a refusal minted failed: the model cannot spend a citation on a read the
+			// answer policy would refuse to ground.
+			#expect(!reading.visible.contains(reading.evidence.evidenceID))
+			#expect(!reading.visible.contains("[evidence:"))
+			#expect(reading.evidence.status == .failed)
+			#expect(reading.evidence.allowedResources.isEmpty)
+
+			let events = try await harness.events.events(for: harness.context)
+			#expect(events.first?.status == .blocked)
+			#expect(events.first?.artifactID == reading.evidence.evidenceID)
+			#expect(events.first?.count == 1)
+
+			// The refused read leaves no way to describe what came back, because a source event has structurally
+			// nowhere to put it: an envelope carrying a digest of the payload cannot be built at all.
+			#expect(throws: ContractError.self) {
+				try AppEvent(
+					eventType: .source,
+					runID: harness.context.runID,
+					status: .blocked,
+					sourceFamily: .monitoring,
+					count: 1,
+					artifactID: reading.evidence.evidenceID,
+					digest: SourceResult.contentDigest(of: reading.visible))
+			}
+		}
+	}
+
+	@Test
+	func hostedToolCallReturnsTheVisiblePayloadWithTheEvidenceThatCitesIt() async throws {
+		try await Harness.withTool { tool, _ in
+			let arguments = MonitoringTool.Arguments(resource: .errorRate, windowMinutes: 30)
+			let reading = try await tool.read(arguments)
+			let visible = try await tool.call(arguments)
+			let read = try JSONDecoder().decode(SourceToolPayload.self, from: Data(reading.visible.utf8))
+			let called = try JSONDecoder().decode(SourceToolPayload.self, from: Data(visible.utf8))
+
+			#expect(tool.name == "get_monitoring")
+			#expect(read.content == reading.artifact.content)
+			#expect(read.content.contains("\"error_rate\":0.071"))
+			#expect(read.content.contains("\"window_minutes\":30"))
+
+			// The reason this tool has a visible channel at all: a monitoring read the model cannot name is a
+			// read no answer can be grounded in, so the identifier the host issued travels with the content.
+			#expect(read.evidenceID == reading.evidence.evidenceID)
+			#expect(read.citation == "[evidence:\(reading.evidence.evidenceID)]")
+
+			// `call` is the visible half of the same work, so it agrees on everything the read returned except
+			// the record — a second read is a second issuance, and each payload carries its own handle.
+			#expect(called.content == read.content)
+			#expect(called.sourceID == read.sourceID)
+			#expect(called.evidenceID != read.evidenceID)
+		}
+	}
+
+	@Test
+	func theModelVisibleTextIsSortedKeyJSONWithTheSameContractFieldsAsEverySource() async throws {
+		try await Harness.withTool { tool, _ in
+			let reading = try await tool.read(MonitoringTool.Arguments(resource: .health))
+			let object = try #require(
+				try JSONSerialization.jsonObject(with: Data(reading.visible.utf8)) as? [String: Any]
+			)
+
+			#expect(object.keys.sorted() == [
+				"citation",
+				"content",
+				"evidence_id",
+				"quarantined",
+				"source_family",
+				"source_id",
+				"status",
+				"truncated",
+				"untrusted_data"
+			])
+
+			let payload = try JSONDecoder().decode(SourceToolPayload.self, from: Data(reading.visible.utf8))
+
+			#expect(payload.sourceFamily == "monitoring")
+			#expect(payload.sourceID == "monitoring:health")
+			#expect(payload.status == "ok")
+			#expect(payload.untrustedData)
+			#expect(!payload.quarantined)
+			#expect(!payload.truncated)
+			// Sorted keys and unescaped slashes make the tool text byte-stable across identical reads.
+			#expect(reading.visible.hasPrefix(#"{"citation":"[evidence:"#))
+		}
+	}
+
+	@Test
+	func argumentSchemaExposesNoTransportSurface() throws {
+		guard case let .object(_, _, _, _, _, _, properties, required, additionalProperties) = MonitoringTool.Arguments.schema else {
+			throw ContractError("monitoring tool arguments must be an object schema")
+		}
+
+		#expect(Set(properties.keys) == ["resource", "window_minutes", "limit", "page_token"])
+		#expect(Set(properties.keys).isDisjoint(with: ["url", "method", "headers", "origin", "base_url"]))
+		#expect(required == ["resource"])
+		#expect(additionalProperties == .boolean(false))
+	}
+
+	@Test(arguments: [
+		#"{"resource":"health","extra":1}"#,
+		#"{"resource":"/admin"}"#,
+		#"{"resource":"health","page_url":"http://127.0.0.1:1/admin"}"#,
+		"{}"
+	])
+	func argumentDecodingRejectsUnknownFieldsAndUnknownResources(text: String) throws {
+		#expect(throws: (any Error).self) {
+			try JSONDecoder().decode(MonitoringTool.Arguments.self, from: Data(text.utf8))
+		}
+	}
+
+	@Test
+	func argumentDecodingAcceptsTheDocumentedFieldNames() throws {
+		let token = MonitoringResource.dependencies.pageToken(page: 2, limit: 3)
+		let text = #"{"resource":"dependencies","limit":3,"page_token":"\#(token)"}"#
+		let arguments = try JSONDecoder().decode(MonitoringTool.Arguments.self, from: Data(text.utf8))
+
+		#expect(arguments.resource == .dependencies)
+		#expect(arguments.limit == 3)
+		#expect(arguments.pageToken == token)
+		#expect(arguments.windowMinutes == nil)
+	}
+}
+
+// MARK: Harness
+
+struct Harness: Sendable {
+
+	static let fixtureURL = URL(filePath: #filePath)
+		.deletingLastPathComponent()
+		.deletingLastPathComponent()
+		.deletingLastPathComponent()
+		.appending(path: "data/monitoring/scenarios.json")
+
+	let context: RuntimeContext
+	let registry: TurnEvidenceRegistry
+	let events: CollectingEventSink
+
+	static func withTool(_ body: (MonitoringTool, Harness) async throws -> Void) async throws {
+		let server = MonitoringFixtureServer(fixture: try MonitoringFixture(contentsOf: fixtureURL))
+		let port = try await server.start()
+		let secret = try ScopeSecret(Data("clearly-fake-test-scope-key-0001".utf8))
+		let harness = Harness(
+			context: try RuntimeContext(identityID: "identity-test-a", threadID: "thread-test-a", runID: "run-test-1"),
+			registry: TurnEvidenceRegistry(secret: secret, newID: EvidenceIDSequence().generate),
+			events: try CollectingEventSink(secret: secret))
+		try await harness.registry.beginTurn(harness.context)
+
+		let tool = MonitoringTool(
+			client: try MonitoringClient(baseURL: "http://127.0.0.1:\(port)"),
+			registry: harness.registry,
+			events: harness.events,
+			context: harness.context)
+		do {
+			try await body(tool, harness)
+			await server.stop()
+		} catch {
+			await server.stop()
+			throw error
+		}
+	}
+}
+
+final class EvidenceIDSequence: Sendable {
+
+	private let issued = Mutex(0)
+
+	var generate: @Sendable () throws -> String {
+		{
+			self.issued.withLock { count in
+				count += 1
+
+				return "evidence-test-\(count)"
+			}
+		}
+	}
+}
